@@ -17,9 +17,11 @@ export default function DataSyncProvider({ children }: { children: React.ReactNo
 
       // 2. Sync user session if not already in store
       if (!user) {
+        console.log("DataSyncProvider: No local user, checking Supabase session...");
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (session?.user) {
+          console.log("DataSyncProvider: Session found for", session.user.email);
           // 3. Robust Profile Fetch or Fallback Create
           let { data: profile, error: profileError } = await supabase
             .from('profiles')
@@ -27,9 +29,12 @@ export default function DataSyncProvider({ children }: { children: React.ReactNo
             .eq('id', session.user.id)
             .single();
 
+          if (profileError) console.error("DataSyncProvider: Profile fetch error", profileError);
+
           // If profile is missing but user is authenticated, create a default one
           if (!profile || profileError) {
-            const { data: createdProfile } = await supabase
+            console.log("DataSyncProvider: Profile missing, attempting auto-creation...");
+            const { data: createdProfile, error: createError } = await supabase
               .from('profiles')
               .upsert({
                 id: session.user.id,
@@ -42,10 +47,13 @@ export default function DataSyncProvider({ children }: { children: React.ReactNo
               })
               .select()
               .single();
+            
+            if (createError) console.error("DataSyncProvider: Profile creation failed", createError);
             profile = createdProfile;
           }
 
           if (profile) {
+            console.log("DataSyncProvider: Syncing user to store:", profile.full_name);
             login({
               id: session.user.id,
               name: profile.full_name,
@@ -56,6 +64,8 @@ export default function DataSyncProvider({ children }: { children: React.ReactNo
               lastActiveAt: profile.last_active_at
             });
           }
+        } else {
+          console.log("DataSyncProvider: No Supabase session found.");
         }
       }
     };

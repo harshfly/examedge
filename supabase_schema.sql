@@ -128,38 +128,47 @@ CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.
 DROP POLICY IF EXISTS "Users can insert own profile" ON profiles;
 CREATE POLICY "Users can insert own profile" ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
 
+-- Helper function to check if a user is an admin without recursion
+CREATE OR REPLACE FUNCTION public.check_is_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND role = 'admin'
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 DROP POLICY IF EXISTS "Admin can read all profiles" ON profiles;
-CREATE POLICY "Admin can read all profiles" ON profiles FOR SELECT USING (
-  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
-);
+CREATE POLICY "Admin can read all profiles" ON profiles FOR SELECT USING (check_is_admin());
 
 -- Allow all for authenticated users (admin)
 DROP POLICY IF EXISTS "Admin All Settings" ON examedge_settings;
-CREATE POLICY "Admin All Settings" ON examedge_settings FOR ALL USING (true);
+CREATE POLICY "Admin All Settings" ON examedge_settings FOR ALL USING (check_is_admin());
 
 DROP POLICY IF EXISTS "Admin All Subjects" ON examedge_subjects;
-CREATE POLICY "Admin All Subjects" ON examedge_subjects FOR ALL USING (true);
+CREATE POLICY "Admin All Subjects" ON examedge_subjects FOR ALL USING (check_is_admin());
 
 DROP POLICY IF EXISTS "Admin All Topics" ON examedge_topics;
-CREATE POLICY "Admin All Topics" ON examedge_topics FOR ALL USING (true);
+CREATE POLICY "Admin All Topics" ON examedge_topics FOR ALL USING (check_is_admin());
 
 DROP POLICY IF EXISTS "Admin All Quizzes" ON examedge_quizzes;
-CREATE POLICY "Admin All Quizzes" ON examedge_quizzes FOR ALL USING (true);
+CREATE POLICY "Admin All Quizzes" ON examedge_quizzes FOR ALL USING (check_is_admin());
 
 DROP POLICY IF EXISTS "Admin All Flashcards" ON examedge_flashcards;
-CREATE POLICY "Admin All Flashcards" ON examedge_flashcards FOR ALL USING (true);
+CREATE POLICY "Admin All Flashcards" ON examedge_flashcards FOR ALL USING (check_is_admin());
 
 DROP POLICY IF EXISTS "Admin All Diagrams" ON examedge_diagrams;
-CREATE POLICY "Admin All Diagrams" ON examedge_diagrams FOR ALL USING (true);
+CREATE POLICY "Admin All Diagrams" ON examedge_diagrams FOR ALL USING (check_is_admin());
 
 DROP POLICY IF EXISTS "Admin All Quotes" ON examedge_quotes;
-CREATE POLICY "Admin All Quotes" ON examedge_quotes FOR ALL USING (true);
+CREATE POLICY "Admin All Quotes" ON examedge_quotes FOR ALL USING (check_is_admin());
 
 DROP POLICY IF EXISTS "Admin All Syllabi" ON examedge_syllabi;
-CREATE POLICY "Admin All Syllabi" ON examedge_syllabi FOR ALL USING (true);
+CREATE POLICY "Admin All Syllabi" ON examedge_syllabi FOR ALL USING (check_is_admin());
 
 DROP POLICY IF EXISTS "Admin All Images" ON examedge_images;
-CREATE POLICY "Admin All Images" ON examedge_images FOR ALL USING (true);
+CREATE POLICY "Admin All Images" ON examedge_images FOR ALL USING (check_is_admin());
 
 -- Function to handle new user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
