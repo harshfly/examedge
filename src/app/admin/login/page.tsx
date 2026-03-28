@@ -33,6 +33,7 @@ export default function AdminLoginPage() {
         
       if (profile?.role === 'admin') {
         toast.success("Welcome back, Master Admin.");
+        router.refresh();
         router.push('/admin');
       } else {
         await supabase.auth.signOut();

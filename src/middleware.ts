@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Create an initial response
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -10,6 +11,9 @@ export async function middleware(request: NextRequest) {
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // Diagnostic header to trace environment variables
+  response.headers.set('x-middleware-config', (!url || url === 'YOUR_SUPABASE_URL') ? 'missing' : 'present');
 
   if (!url || url === 'YOUR_SUPABASE_URL' || !key || key === 'YOUR_SUPABASE_ANON_KEY') {
     return response;
@@ -21,11 +25,10 @@ export async function middleware(request: NextRequest) {
         return request.cookies.getAll()
       },
       setAll(cookiesToSet) {
+        // Update request cookies for subsequent use in the same request
         cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
-        // Updating the response ensures cookies are sent back to the client
-        response = NextResponse.next({
-          request,
-        })
+        
+        // Ensure response cookies are set too
         cookiesToSet.forEach(({ name, value, options }) =>
           response.cookies.set(name, value, options)
         )
@@ -34,20 +37,30 @@ export async function middleware(request: NextRequest) {
   })
 
   // IMPORTANT: Do not use supabase.auth.getSession() as it's less secure than getUser()
-  // and can be spoofed. always use getUser() to verify the user.
   const { data: { user } } = await supabase.auth.getUser()
 
+  // Diagnostic header for auth status
+  response.headers.set('x-middleware-auth-status', user ? 'authenticated' : 'unauthenticated');
+  if (user) {
+    response.headers.set('x-middleware-user-id', user.id);
+  }
+
+  const pathname = request.nextUrl.pathname;
+
   // 1. If user is trying to access admin pages (except admin login)
-  if (request.nextUrl.pathname.startsWith('/admin') && !request.nextUrl.pathname.startsWith('/admin/login')) {
+  if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
     if (!user) {
       // Redirect to ADMIN login, not the student one
-      return NextResponse.redirect(new URL('/admin/login', request.url))
+      const redirectUrl = new URL('/admin/login', request.url);
+      // Preserve the intended destination in a search param if desired
+      // redirectUrl.searchParams.set('next', pathname);
+      return NextResponse.redirect(redirectUrl);
     }
   }
 
-  // 2. Optional: Redirect logged-in users away from login pages
-  if (user && (request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/admin/login')) {
-    const redirectUrl = request.nextUrl.pathname.startsWith('/admin') ? '/admin' : '/dashboard';
+  // 2. Redirect logged-in users away from login pages to prevent confusion
+  if (user && (pathname === '/login' || pathname === '/admin/login')) {
+    const redirectUrl = pathname.startsWith('/admin') ? '/admin' : '/dashboard';
     return NextResponse.redirect(new URL(redirectUrl, request.url));
   }
 
