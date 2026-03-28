@@ -6,10 +6,47 @@ import { useSemesterContext } from "@/hooks/useSemesterContext";
 import SemesterSwitcher from "@/components/ui/SemesterSwitcher";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { useAppStore } from "@/store/useAppStore";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase/client";
+import { Quote, FileText, ExternalLink, Sparkles } from "lucide-react";
 
 export default function DashboardPage() {
-  const { semesterSubjects, isLive, semRoman, subjectCount, totalUnits, totalCredits } = useSemesterContext();
+  const { selectedYear, selectedSem, semesterSubjects, isLive, semRoman, subjectCount, totalUnits, totalCredits } = useSemesterContext();
   const user = useAppStore(state => state.user);
+  
+  const [quote, setQuote] = useState<{text: string, author: string} | null>(null);
+  const [syllabus, setSyllabus] = useState<{pdf_url: string, name: string} | null>(null);
+
+  useEffect(() => {
+    if (isLive) {
+      fetchDashboardExtra(selectedYear, selectedSem);
+    }
+  }, [isLive, selectedYear, selectedSem]);
+
+  async function fetchDashboardExtra(y: number | null, s: number | null) {
+    // 1. Fetch Random Active Quote
+    const { data: quoteData } = await supabase
+      .from('quotes')
+      .select('text, author')
+      .eq('active', true);
+    
+    if (quoteData && quoteData.length > 0) {
+      const randomQuote = quoteData[Math.floor(Math.random() * quoteData.length)];
+      setQuote(randomQuote);
+    }
+
+    // 2. Fetch Syllabus for current context
+    if (y && s) {
+      const { data: syllabusData } = await supabase
+        .from('syllabi')
+        .select('pdf_url, name')
+        .eq('year', y)
+        .eq('semester', s)
+        .maybeSingle();
+      
+      if (syllabusData) setSyllabus(syllabusData);
+    }
+  }
 
   return (
     <>
@@ -62,6 +99,26 @@ export default function DashboardPage() {
           )}
         </div>
 
+        {/* Motivation Banner */}
+        {isLive && quote && (
+          <div className="mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
+            <div className="relative overflow-hidden bg-[var(--bg-overlay)] border border-[rgba(108,99,255,0.2)] rounded-[var(--r-xl)] p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
+              <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                <Quote className="w-24 h-24 rotate-12" />
+              </div>
+              <div className="w-12 h-12 rounded-full bg-[rgba(108,99,255,0.15)] flex items-center justify-center flex-shrink-0 animate-pulse">
+                <Sparkles className="w-6 h-6 text-[var(--accent)]" />
+              </div>
+              <div className="text-center md:text-left flex-1 relative z-10">
+                <p className="text-[16px] md:text-[18px] font-['Syne'] font-bold text-white mb-1 leading-relaxed italic">
+                  &ldquo;{quote.text}&rdquo;
+                </p>
+                <div className="text-[12px] font-bold text-[var(--accent)] uppercase tracking-wider">— {quote.author || 'Anonymous'}</div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Coming Soon or Live Content */}
         {!isLive ? (
           <ComingSoon />
@@ -85,9 +142,26 @@ export default function DashboardPage() {
             </div>
 
             {/* Subjects Section */}
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="font-['Syne'] font-bold text-[20px] text-[var(--text-primary)]">Your Subjects</h2>
-              <Link href="/study" className="text-[13px] text-[var(--accent)] hover:underline cursor-pointer">View All →</Link>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
+              <div className="flex items-center gap-2">
+                <h2 className="font-['Syne'] font-bold text-[20px] text-[var(--text-primary)]">Your Subjects</h2>
+                <div className="h-[20px] w-[1px] bg-[var(--border)] mx-2 hidden md:block"></div>
+                <Link href="/study" className="text-[13px] text-[var(--accent)] hover:underline cursor-pointer">View All →</Link>
+              </div>
+
+              {/* Syllabus Action */}
+              {syllabus && (
+                <a 
+                  href={syllabus.pdf_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-full md:w-auto flex items-center justify-center gap-2 bg-[#10b98115] border border-[#10b98130] text-[#10b981] px-4 py-2 rounded-lg text-[13px] font-bold hover:bg-[#10b98125] transition-all group"
+                >
+                  <FileText className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                  Full Semester Syllabus PDF
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-10">

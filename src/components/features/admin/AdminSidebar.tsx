@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, BookOpen, FileEdit, Network, Image as ImageIcon, HelpCircle, Layers, BarChart, Settings } from "lucide-react";
+import { CalendarDays, BookOpen, FileEdit, Network, Image as ImageIcon, HelpCircle, Layers, BarChart, Settings, Quote, FileText } from "lucide-react";
 
 export default function AdminSidebar() {
   const pathname = usePathname();
@@ -14,6 +14,7 @@ export default function AdminSidebar() {
         { href: '/admin/years', label: 'Years & Semesters', icon: <CalendarDays className="w-4 h-4" /> },
         { href: '/admin/subjects', label: 'Manage Subjects', icon: <BookOpen className="w-4 h-4" /> },
         { href: '/admin/topics', label: 'Topic Editor', icon: <FileEdit className="w-4 h-4" /> },
+        { href: '/admin/syllabus', label: 'Syllabus Manager', icon: <FileText className="w-4 h-4" /> },
         { href: '/admin/diagrams', label: 'Diagram Editor', icon: <Network className="w-4 h-4" /> },
         { href: '/admin/images', label: 'Image Manager', icon: <ImageIcon className="w-4 h-4" /> },
       ]
@@ -34,6 +35,7 @@ export default function AdminSidebar() {
     {
       title: 'SYSTEM',
       items: [
+        { href: '/admin/quotes', label: 'Student Motivation', icon: <Quote className="w-4 h-4" /> },
         { href: '/admin/settings', label: 'Settings', icon: <Settings className="w-4 h-4" /> },
       ]
     }

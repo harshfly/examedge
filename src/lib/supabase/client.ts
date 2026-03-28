@@ -9,3 +9,5 @@ export function createClient() {
 
   return createBrowserClient(finalUrl, finalKey)
 }
+
+export const supabase = createClient();
