@@ -39,13 +39,13 @@ export default function StudyPage({ params }: { params: Promise<{ subjectId: str
           {/* Mobile Overlay */}
           <div className="absolute inset-0 bg-black/60 lg:hidden" onClick={() => setSidebarOpen(false)}></div>
           
-          <div className="relative w-[280px] h-full lg:w-[268px] animate-in slide-in-from-left duration-300">
-            {/* Mobile Close Button */}
+          <div className="relative w-[280px] h-full lg:w-[268px] bg-[var(--bg-elevated)] border-r border-[var(--border)] animate-in slide-in-from-left duration-300">
+            {/* Mobile Close Button - Inside for better visibility */}
             <button 
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden absolute top-4 -right-12 w-10 h-10 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-full flex items-center justify-center text-white"
+              className="lg:hidden absolute top-4 right-4 w-8 h-8 bg-[var(--bg-base)] border border-[var(--border)] rounded-full flex items-center justify-center text-white z-50 shadow-lg"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
             <Sidebar subject={subject} allSubjects={subjects} currentTopicId={topic.id} />
           </div>
@@ -64,13 +64,13 @@ export default function StudyPage({ params }: { params: Promise<{ subjectId: str
           {/* Mobile Overlay */}
           <div className="absolute inset-0 bg-black/60 lg:hidden" onClick={() => setTocOpen(false)}></div>
           
-          <div className="absolute right-0 top-0 bottom-0 w-[240px] h-full lg:relative lg:w-[224px] lg:block animate-in slide-in-from-right duration-300">
-             {/* Mobile Close Button */}
+          <div className="absolute right-0 top-0 bottom-0 w-[240px] h-full lg:relative lg:w-[224px] bg-[var(--bg-elevated)] border-l border-[var(--border)] lg:block animate-in slide-in-from-right duration-300">
+             {/* Mobile Close Button - Inside for better visibility */}
              <button 
               onClick={() => setTocOpen(false)}
-              className="lg:hidden absolute top-4 -left-12 w-10 h-10 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-full flex items-center justify-center text-white"
+              className="lg:hidden absolute top-4 left-4 w-8 h-8 bg-[var(--bg-base)] border border-[var(--border)] rounded-full flex items-center justify-center text-white z-50 shadow-lg"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
             <TableOfContents subject={subject} currentTopicId={topic.id} />
           </div>

@@ -19,7 +19,7 @@ export default function Sidebar({ subject, allSubjects, currentTopicId }: Sideba
   };
 
   return (
-    <div className="w-[268px] flex-shrink-0 h-full bg-[var(--bg-elevated)] border-r border-[var(--border)] flex flex-col overflow-y-auto">
+    <div className="w-full lg:w-[268px] flex-shrink-0 h-full bg-[var(--bg-elevated)] border-r border-[var(--border)] flex flex-col overflow-y-auto">
       {/* Subject Dropdown Context */}
       <div className="p-4 border-b border-[var(--border)]">
         <select 
