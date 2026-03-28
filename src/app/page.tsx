@@ -49,7 +49,7 @@ export default function LandingPage() {
         <div className="max-w-[960px] mx-auto px-6 py-12 relative z-10 flex flex-col items-center flex-1 w-full pb-32">
         {/* Eyebrow Pill */}
         <div className="mb-6 px-4 py-1.5 rounded-full border border-[rgba(108,99,255,0.25)] bg-[rgba(108,99,255,0.12)]">
-          <span className="text-[12px] font-semibold text-[#a78bfa] tracking-[0.06em] uppercase">✦ SVIIT · B.Tech CSE/IT · 2023–27</span>
+          <span className="text-[12px] font-semibold text-[#a78bfa] tracking-[0.06em] uppercase">✦ Your SVIIT B.Tech Learn Buddy · 2023–27</span>
         </div>
 
         {/* Hero Headlines */}
