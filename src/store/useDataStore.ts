@@ -10,21 +10,21 @@ interface DataState {
   quizzes: QuizQuestion[];
   flashcards: Flashcard[];
   images: TopicImage[];
-  
+
   // Curriculum
   curriculum: CurriculumYear[];
-  updateSemesterStatus: (sem: number, status: 'live'|'coming-soon'|'locked') => void;
+  updateSemesterStatus: (sem: number, status: 'live' | 'coming-soon' | 'locked') => void;
 
   // Semester selection
   selectedYear: number;
   selectedSem: number;
   setSelectedSemester: (year: number, sem: number) => void;
-  
+
   // Subjects
   addSubject: (subject: Subject) => void;
   updateSubject: (id: string, updates: Partial<Subject>) => void;
   deleteSubject: (id: string) => void;
-  
+
   // Topics
   saveTopic: (topicId: string, content: TopicContent) => void;
   deleteTopic: (topicId: string) => void;
@@ -34,7 +34,7 @@ interface DataState {
   deleteQuiz: (id: string) => void;
   saveFlashcard: (card: Flashcard) => void;
   deleteFlashcard: (id: string) => void;
-  
+
   // Assets
   saveImage: (img: TopicImage) => void;
   deleteImage: (id: string) => void;
@@ -62,23 +62,23 @@ export const useDataStore = create<DataState>()(
       selectedYear: 3,
       selectedSem: 6,
       setSelectedSemester: (year, sem) => set({ selectedYear: year, selectedSem: sem }),
-      
+
       addSubject: (subject) => set((state) => ({
         subjects: [...state.subjects, subject]
       })),
-      
+
       updateSubject: (id, updates) => set((state) => ({
         subjects: state.subjects.map(s => s.id === id ? { ...s, ...updates } : s)
       })),
-      
+
       deleteSubject: (id) => set((state) => ({
         subjects: state.subjects.filter(s => s.id !== id)
       })),
-      
+
       saveTopic: (topicId, content) => set((state) => ({
         topics: { ...state.topics, [topicId]: content }
       })),
-      
+
       deleteTopic: (topicId) => set((state) => {
         const newTopics = { ...state.topics };
         delete newTopics[topicId];

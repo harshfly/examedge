@@ -3,13 +3,14 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
-import { createClient } from '@/lib/supabase/client';
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 
 export default function LoginPage() {
   const router = useRouter();
   const login = useAppStore(state => state.login);
   const supabase = createClient();
+  const isConfigured = isSupabaseConfigured();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -116,6 +117,22 @@ export default function LoginPage() {
           </div>
           <p className="text-[14px] text-[var(--text-secondary)]">Student Gateway</p>
         </div>
+
+        {!isConfigured && (
+          <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl">
+            <div className="flex gap-3 items-start">
+              <div className="w-5 h-5 rounded-full bg-rose-500 flex items-center justify-center shrink-0 mt-0.5">
+                <span className="text-white text-[12px] font-bold">!</span>
+              </div>
+              <div>
+                <h4 className="text-rose-500 text-[13px] font-bold mb-1">Configuration Required</h4>
+                <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
+                  Supabase environment variables are missing. Please add <code className="text-rose-400 bg-rose-400/10 px-1 rounded">NEXT_PUBLIC_SUPABASE_URL</code> and <code className="text-rose-400 bg-rose-400/10 px-1 rounded">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> to your Vercel project settings and redeploy.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleAuth} className="flex flex-col gap-4">
           {isRegistering && (
