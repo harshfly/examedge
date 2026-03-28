@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useSemesterContext } from "@/hooks/useSemesterContext";
 import { useHydrateProgress } from "@/hooks/useHydrateProgress";
 import { useAppStore } from "@/store/useAppStore";
+import { useDataStore } from "@/store/useDataStore";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -27,6 +28,23 @@ export default function Navbar() {
     { href: '/progress', label: 'Progress' },
     { href: '/planner', label: 'Planner' },
   ];
+
+  // Dynamic Countdown Calculation
+  const { examDates, selectedYear } = useDataStore();
+  const [activePill, setActivePill] = useState<'exam' | 'streak' | null>(null);
+
+  const getDaysRemaining = () => {
+    const target = examDates[selectedYear] || new Date().toISOString();
+    const diff = new Date(target).getTime() - Date.now();
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  };
+
+  const daysRemaining = getDaysRemaining();
+  const formattedExamDate = new Date(examDates[selectedYear] || Date.now()).toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: 'numeric', 
+    year: 'numeric' 
+  });
 
   return (
     <>
@@ -71,26 +89,59 @@ export default function Navbar() {
 
           {/* Right Section */}
           <div className="flex items-center gap-2 md:gap-4">
-            {/* Exam Countdown - Navbar Version */}
+            {/* Exam Countdown Pill */}
             {isLive && (
-              <div className="bg-[#fbbf2415] border border-[#fbbf2430] text-[#fbbf24] rounded-full px-2 md:px-3 py-1 text-[10px] md:text-[12px] font-bold flex items-center gap-1 whitespace-nowrap">
-                <span className="opacity-70">⏳</span> 18d
+              <div className="relative z-[110]">
+                <button 
+                  onClick={() => setActivePill(activePill === 'exam' ? null : 'exam')}
+                  className="bg-[#fbbf2415] border border-[#fbbf2430] text-[#fbbf24] rounded-full px-2 md:px-3 py-1 text-[10px] md:text-[12px] font-bold flex items-center gap-1 whitespace-nowrap hover:bg-[#fbbf2425] transition-all"
+                >
+                  <span className="opacity-70">⏳</span> {daysRemaining}d
+                </button>
+
+                {activePill === 'exam' && (
+                  <div className="absolute top-full mt-2 right-0 w-[220px] bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[var(--r-lg)] p-3 shadow-[var(--shadow-xl)] animate-in fade-in zoom-in-95 duration-200 z-[120]">
+                    <h4 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Academic Schedule</h4>
+                    <p className="text-[13px] text-white font-medium mb-1">Exam starts on {formattedExamDate}</p>
+                    <p className="text-[11px] text-[var(--text-secondary)]">{daysRemaining} days left to prepare for Year {selectedYear}.</p>
+                  </div>
+                )}
               </div>
             )}
 
-            <div className="bg-[rgba(249,115,22,0.15)] border border-[rgba(249,115,22,0.3)] text-[#f97316] rounded-full px-2 md:px-3 py-1 text-[10px] md:text-[12px] font-bold flex items-center gap-1">
-              {user?.streak || 1} 🔥
+            {/* Streak Pill */}
+            <div className="relative z-[110]">
+              <button 
+                onClick={() => setActivePill(activePill === 'streak' ? null : 'streak')}
+                className="bg-[rgba(249,115,22,0.15)] border border-[rgba(249,115,22,0.3)] text-[#f97316] rounded-full px-2 md:px-3 py-1 text-[10px] md:text-[12px] font-bold flex items-center gap-1 hover:bg-[rgba(249,115,22,0.25)] transition-all"
+              >
+                {mounted && user?.streak || 1} 🔥
+              </button>
+
+              {activePill === 'streak' && (
+                <div className="absolute top-full mt-2 right-0 w-[180px] bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[var(--r-lg)] p-3 shadow-[var(--shadow-xl)] animate-in fade-in zoom-in-95 duration-200 z-[120]">
+                  <h4 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Learning Streak</h4>
+                  <p className="text-[13px] text-white font-medium mb-1">{mounted && user?.streak || 1} Day Streak!</p>
+                  <p className="text-[11px] text-[var(--text-secondary)]">You're on fire! Keep studying to maintain your streak.</p>
+                </div>
+              )}
             </div>
             
             <Link href={mounted && user ? "/profile" : "/login"} className="btn-ghost hidden sm:flex items-center gap-1.5 text-[var(--accent)] !text-[12px]">
               <User className="w-3.5 h-3.5" />
               {mounted && user ? "Profile" : "Login"}
             </Link>
-            
-
           </div>
         </div>
       </nav>
+
+      {/* Close popovers on click outside */}
+      {activePill && (
+        <div 
+          className="fixed inset-0 z-[105]" 
+          onClick={() => setActivePill(null)}
+        />
+      )}
 
       {/* Mobile Bottom Navigation Bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-[rgba(9,9,11,0.8)] backdrop-blur-[20px] border-t border-[var(--border)] px-2 pb-safe-area shadow-[0_-10px_40px_rgba(0,0,0,0.4)]">

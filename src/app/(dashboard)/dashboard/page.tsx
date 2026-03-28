@@ -10,43 +10,29 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { Quote, FileText, ExternalLink, Sparkles } from "lucide-react";
 
+import { useDataStore } from "@/store/useDataStore";
+
 export default function DashboardPage() {
   const { selectedYear, selectedSem, semesterSubjects, isLive, semRoman, subjectCount, totalUnits, totalCredits } = useSemesterContext();
   const user = useAppStore(state => state.user);
+  const { quotes, syllabi } = useDataStore();
   
   const [quote, setQuote] = useState<{text: string, author: string} | null>(null);
   const [syllabus, setSyllabus] = useState<{pdf_url: string, name: string} | null>(null);
 
   useEffect(() => {
     if (isLive) {
-      fetchDashboardExtra(selectedYear, selectedSem);
-    }
-  }, [isLive, selectedYear, selectedSem]);
+      // 1. Get random active quote from store
+      const activeQuotes = quotes.filter(q => q.active);
+      if (activeQuotes.length > 0) {
+        setQuote(activeQuotes[Math.floor(Math.random() * activeQuotes.length)]);
+      }
 
-  async function fetchDashboardExtra(y: number | null, s: number | null) {
-    // 1. Fetch Random Active Quote
-    const { data: quoteData } = await supabase
-      .from('quotes')
-      .select('text, author')
-      .eq('active', true);
-    
-    if (quoteData && quoteData.length > 0) {
-      const randomQuote = quoteData[Math.floor(Math.random() * quoteData.length)];
-      setQuote(randomQuote);
+      // 2. Get syllabus for selected context from store
+      const currentSyllabus = syllabi.find(s => s.year === selectedYear && s.semester === selectedSem);
+      if (currentSyllabus) setSyllabus(currentSyllabus);
     }
-
-    // 2. Fetch Syllabus for current context
-    if (y && s) {
-      const { data: syllabusData } = await supabase
-        .from('syllabi')
-        .select('pdf_url, name')
-        .eq('year', y)
-        .eq('semester', s)
-        .maybeSingle();
-      
-      if (syllabusData) setSyllabus(syllabusData);
-    }
-  }
+  }, [isLive, selectedYear, selectedSem, quotes, syllabi]);
 
   return (
     <>

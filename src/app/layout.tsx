@@ -3,6 +3,7 @@ import { DM_Sans, JetBrains_Mono, Syne } from 'next/font/google';
 import './globals.css';
 import AnimatedBackground from '@/components/layout/AnimatedBackground';
 import { Toaster } from 'sonner';
+import DataSyncProvider from '@/components/providers/DataSyncProvider';
 
 const syne = Syne({
   subsets: ['latin'],
@@ -34,9 +35,11 @@ export default function RootLayout({
       <body
         className={`${syne.variable} ${dmSans.variable} ${jetbrainsMono.variable} antialiased`}
       >
-        <AnimatedBackground />
-        {children}
-        <Toaster richColors position="top-center" />
+        <DataSyncProvider>
+          <AnimatedBackground />
+          {children}
+          <Toaster richColors position="top-center" />
+        </DataSyncProvider>
       </body>
     </html>
   );

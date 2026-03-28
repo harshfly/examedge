@@ -1,20 +1,12 @@
 'use client';
 
-import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase/client";
+import { useState } from "react";
 import { FileText, Plus, Loader2, Trash2, ExternalLink, GraduationCap, AlertCircle, Save } from "lucide-react";
-
-interface Syllabus {
-  id: string;
-  year: number;
-  semester: number;
-  pdf_url: string;
-  name: string;
-}
+import { useDataStore } from "@/store/useDataStore";
+import { SyllabusLink } from "@/types";
 
 export default function AdminSyllabusPage() {
-  const [syllabi, setSyllabi] = useState<Syllabus[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { syllabi, saveSyllabus, deleteSyllabus } = useDataStore();
   const [saving, setSaving] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -24,54 +16,19 @@ export default function AdminSyllabusPage() {
     pdf_url: ''
   });
 
-  useEffect(() => {
-    fetchSyllabi();
-  }, []);
-
-  async function fetchSyllabi() {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('syllabi')
-        .select('*')
-        .order('year', { ascending: true })
-        .order('semester', { ascending: true });
-      
-      if (error) throw error;
-      setSyllabi(data || []);
-    } catch (err: any) {
-      console.error('Error fetching syllabi:', err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   async function handleAddSyllabus() {
     if (!formData.pdf_url || !formData.name) return;
     try {
       setSaving(true);
-      const { data, error } = await supabase
-        .from('syllabi')
-        .upsert([{ 
-           year: formData.year, 
-           semester: formData.semester, 
-           name: formData.name, 
-           pdf_url: formData.pdf_url 
-        }], { onConflict: 'year,semester' })
-        .select();
+      const newSyllabus: SyllabusLink = {
+        id: `SYL-${formData.year}-${formData.semester}`,
+        year: formData.year,
+        semester: formData.semester,
+        name: formData.name,
+        pdf_url: formData.pdf_url
+      };
       
-      if (error) throw error;
-      
-      // Update local state (if year/sem exists, replace, else add)
-      const existingIdx = syllabi.findIndex(s => s.year === formData.year && s.semester === formData.semester);
-      if (existingIdx >= 0) {
-        const updated = [...syllabi];
-        updated[existingIdx] = data[0];
-        setSyllabi(updated);
-      } else {
-        setSyllabi([...syllabi, data[0]].sort((a,b) => a.year - b.year || a.semester - b.semester));
-      }
-      
+      saveSyllabus(newSyllabus);
       setFormData({ ...formData, pdf_url: '' });
       alert('Syllabus updated successfully!');
     } catch (err: any) {
@@ -83,17 +40,7 @@ export default function AdminSyllabusPage() {
 
   async function handleDelete(id: string) {
     if (!confirm('Remove this syllabus link?')) return;
-    try {
-      const { error } = await supabase
-        .from('syllabi')
-        .delete()
-        .eq('id', id);
-      
-      if (error) throw error;
-      setSyllabi(syllabi.filter(s => s.id !== id));
-    } catch (err: any) {
-      alert(err.message);
-    }
+    deleteSyllabus(id);
   }
 
   return (
@@ -185,9 +132,7 @@ export default function AdminSyllabusPage() {
             </div>
             
             <div className="divide-y divide-[var(--border)]">
-              {loading ? (
-                <div className="p-20 flex justify-center"><Loader2 className="w-8 h-8 animate-spin text-[var(--accent)]" /></div>
-              ) : syllabi.length === 0 ? (
+              {syllabi.length === 0 ? (
                 <div className="p-20 text-center text-[var(--text-muted)]">No syllabi mapped yet.</div>
               ) : (
                 syllabi.map((s) => (

@@ -208,3 +208,28 @@ export interface ContentDraft {
   draft: Partial<TopicContent>;
   savedAt: number; isDirty: boolean;
 }
+
+export interface MotivationQuote {
+  id: string;
+  text: string;
+  author: string;
+  active: boolean;
+  created_at?: string;
+}
+
+export interface SyllabusLink {
+  id: string;
+  year: number;
+  semester: number;
+  name: string;
+  pdf_url: string;
+}
+
+export interface DiagramAsset {
+  id: string;
+  type: 'mermaid' | 'ascii';
+  title: string;
+  content: string;
+  caption?: string;
+  updatedAt: string;
+}

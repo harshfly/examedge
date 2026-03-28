@@ -1,56 +1,27 @@
 'use client';
 
-import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase/client";
+import { useState } from "react";
 import { Quote, Plus, Loader2, Trash2, Edit2, Save, X } from "lucide-react";
-
-interface MotivationQuote {
-  id: string;
-  text: string;
-  author: string;
-  active: boolean;
-}
+import { useDataStore } from "@/store/useDataStore";
+import { MotivationQuote } from "@/types";
 
 export default function AdminQuotesPage() {
-  const [quotes, setQuotes] = useState<MotivationQuote[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { quotes, saveQuote, deleteQuote } = useDataStore();
   const [saving, setSaving] = useState(false);
   
   const [newQuote, setNewQuote] = useState({ text: '', author: '' });
-  const [editingId, setEditingId] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchQuotes();
-  }, []);
-
-  async function fetchQuotes() {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('quotes')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      setQuotes(data || []);
-    } catch (err: any) {
-      console.error('Error fetching quotes:', err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
 
   async function handleAddQuote() {
     if (!newQuote.text) return;
     try {
       setSaving(true);
-      const { data, error } = await supabase
-        .from('quotes')
-        .insert([{ ...newQuote, active: true }])
-        .select();
-      
-      if (error) throw error;
-      setQuotes([data[0], ...quotes]);
+      const quote: MotivationQuote = {
+        id: `QT-${Date.now()}`,
+        text: newQuote.text,
+        author: newQuote.author,
+        active: true
+      };
+      saveQuote(quote);
       setNewQuote({ text: '', author: '' });
     } catch (err: any) {
       alert(err.message);
@@ -61,31 +32,11 @@ export default function AdminQuotesPage() {
 
   async function handleDeleteQuote(id: string) {
     if (!confirm('Are you sure you want to delete this quote?')) return;
-    try {
-      const { error } = await supabase
-        .from('quotes')
-        .delete()
-        .eq('id', id);
-      
-      if (error) throw error;
-      setQuotes(quotes.filter(q => q.id !== id));
-    } catch (err: any) {
-      alert(err.message);
-    }
+    deleteQuote(id);
   }
 
-  async function toggleQuoteActive(id: string, current: boolean) {
-    try {
-      const { error } = await supabase
-        .from('quotes')
-        .update({ active: !current })
-        .eq('id', id);
-      
-      if (error) throw error;
-      setQuotes(quotes.map(q => q.id === id ? { ...q, active: !current } : q));
-    } catch (err: any) {
-      alert(err.message);
-    }
+  async function toggleQuoteActive(quote: MotivationQuote) {
+    saveQuote({ ...quote, active: !quote.active });
   }
 
   return (
@@ -134,11 +85,7 @@ export default function AdminQuotesPage() {
 
       {/* Quotes List */}
       <div className="space-y-4">
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-[var(--accent)]" />
-          </div>
-        ) : quotes.length === 0 ? (
+        {quotes.length === 0 ? (
           <div className="py-20 text-center border-2 border-dashed border-[var(--border)] rounded-xl">
              <p className="text-[var(--text-muted)]">No quotes added yet. Be the motivation students need! ✨</p>
           </div>
@@ -153,7 +100,7 @@ export default function AdminQuotesPage() {
               </div>
               <div className="flex items-center gap-2">
                 <button 
-                  onClick={() => toggleQuoteActive(quote.id, quote.active)}
+                  onClick={() => toggleQuoteActive(quote)}
                   className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-colors
                     ${quote.active ? 'bg-[#10b98120] text-[#10b981]' : 'bg-[var(--glass)] text-[var(--text-muted)]'}
                   `}
