@@ -71,8 +71,15 @@ export default function Navbar() {
 
           {/* Right Section */}
           <div className="flex items-center gap-2 md:gap-4">
+            {/* Exam Countdown - Navbar Version */}
+            {isLive && (
+              <div className="bg-[#fbbf2415] border border-[#fbbf2430] text-[#fbbf24] rounded-full px-2 md:px-3 py-1 text-[10px] md:text-[12px] font-bold flex items-center gap-1 whitespace-nowrap">
+                <span className="opacity-70">⏳</span> 18d
+              </div>
+            )}
+
             <div className="bg-[rgba(249,115,22,0.15)] border border-[rgba(249,115,22,0.3)] text-[#f97316] rounded-full px-2 md:px-3 py-1 text-[10px] md:text-[12px] font-bold flex items-center gap-1">
-              🔥 {user?.streak || 1}
+              {user?.streak || 1} 🔥
             </div>
             
             <Link href={mounted && user ? "/profile" : "/login"} className="btn-ghost hidden sm:flex items-center gap-1.5 text-[var(--accent)] !text-[12px]">

@@ -50,7 +50,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-6 md:py-10 relative z-10">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-2 md:py-10 relative z-10">
         
         {/* Breadcrumb */}
         <div className="text-[11px] md:text-[13px] text-[var(--text-muted)] mb-6 md:mb-8 flex flex-wrap items-center gap-2">
@@ -59,61 +59,33 @@ export default function DashboardPage() {
           <span className="text-[var(--text-secondary)]">Semester {semRoman}</span>
         </div>
 
-        {/* Dashboard Header */}
-        <div className="text-center mb-10">
-          <div className="inline-block mb-2">
-            <h1 className="h1 font-['Syne'] font-extrabold text-[34px] md:text-[42px] leading-tight">
+        {/* Dashboard Header - Compressed for mobile */}
+        <div className="text-center mb-4 md:mb-10">
+          <div className="inline-block mb-1 md:mb-2">
+            <h1 className="h1 font-['Syne'] font-extrabold text-[28px] md:text-[42px] leading-tight">
               Semester <span className="text-[var(--accent)]">{semRoman}</span> Dashboard
             </h1>
           </div>
-          <p className="text-[14px] text-[var(--text-secondary)]">{subjectCount} subjects · {totalUnits} units · {totalCredits} credits</p>
+          <p className="text-[12px] md:text-[14px] text-[var(--text-secondary)]">{subjectCount} subjects · {totalUnits} units</p>
 
-          {/* Semester Switcher */}
-          <div className="flex justify-center mt-6">
+          {/* Semester Switcher - Smaller for mobile */}
+          <div className="flex justify-center mt-3 md:mt-6 scale-90 md:scale-100">
             <SemesterSwitcher />
           </div>
-          
-          {/* Centered Countdown & Streak */}
-          {isLive && (
-            <div className="flex justify-center mt-8">
-              <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 w-full max-w-[600px] md:max-w-none">
-                <div className="bg-[var(--bg-overlay)] border border-[var(--border)] rounded-[var(--r-xl)] px-6 py-4 md:px-8 text-center shadow-[0_0_30px_rgba(251,191,36,0.1)] group hover:border-[#fbbf2450] transition-all flex-1 w-full">
-                  <span className="text-[10px] md:text-[11px] text-[var(--text-muted)] uppercase tracking-[0.2em] font-bold mb-2 block">Next Exam Countdown</span>
-                  <div className="text-[28px] md:text-[32px] font-['Syne'] font-black text-[#fbbf24] flex items-baseline justify-center gap-1">
-                    18 <span className="text-[13px] md:text-[14px] font-bold text-[var(--text-muted)] uppercase tracking-normal">Days</span>
-                  </div>
-                </div>
-
-                <div className="hidden md:flex flex-col items-center">
-                  <div className="w-[1px] h-12 bg-[var(--border)]"></div>
-                </div>
-
-                <div className="bg-[rgba(249,115,22,0.1)] border border-[rgba(249,115,22,0.2)] rounded-[var(--r-xl)] px-6 py-4 md:px-8 text-center group hover:border-[var(--accent)] transition-all flex-1 w-full">
-                  <span className="text-[10px] md:text-[11px] text-[var(--text-secondary)] uppercase tracking-[0.2em] font-bold mb-2 block">Daily Streak</span>
-                  <div className="text-[28px] md:text-[32px] font-['Syne'] font-black text-[var(--accent)] flex items-baseline justify-center gap-1">
-                    {user?.streak || 1} <span className="text-[13px] md:text-[14px] font-bold text-[var(--text-muted)] uppercase tracking-normal">Days</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Motivation Banner */}
+        {/* Motivation Banner - Ultra compact for mobile */}
         {isLive && quote && (
-          <div className="mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
-            <div className="relative overflow-hidden bg-[var(--bg-overlay)] border border-[rgba(108,99,255,0.2)] rounded-[var(--r-xl)] p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
-              <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
-                <Quote className="w-24 h-24 rotate-12" />
+          <div className="mb-4 md:mb-10 animate-in fade-in slide-in-from-top-2 duration-500">
+            <div className="relative overflow-hidden bg-[var(--bg-overlay)] border border-[rgba(108,99,255,0.2)] rounded-[var(--r-lg)] p-3 md:p-8 flex items-center gap-3 md:gap-6 shadow-[0_10px_30px_rgba(0,0,0,0.2)]">
+              <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-[rgba(108,99,255,0.15)] flex items-center justify-center flex-shrink-0">
+                <Sparkles className="w-4 h-4 md:w-6 md:h-6 text-[var(--accent)]" />
               </div>
-              <div className="w-12 h-12 rounded-full bg-[rgba(108,99,255,0.15)] flex items-center justify-center flex-shrink-0 animate-pulse">
-                <Sparkles className="w-6 h-6 text-[var(--accent)]" />
-              </div>
-              <div className="text-center md:text-left flex-1 relative z-10">
-                <p className="text-[16px] md:text-[18px] font-['Syne'] font-bold text-white mb-1 leading-relaxed italic">
+              <div className="text-left flex-1 relative z-10">
+                <p className="text-[13px] md:text-[18px] font-['Syne'] font-bold text-white mb-0 leading-tight italic line-clamp-2 md:line-clamp-none">
                   &ldquo;{quote.text}&rdquo;
                 </p>
-                <div className="text-[12px] font-bold text-[var(--accent)] uppercase tracking-wider">— {quote.author || 'Anonymous'}</div>
+                <div className="text-[9px] md:text-[12px] font-bold text-[var(--accent)] uppercase tracking-wider opacity-80 md:opacity-100">— {quote.author || 'Anonymous'}</div>
               </div>
             </div>
           </div>
@@ -124,19 +96,19 @@ export default function DashboardPage() {
           <ComingSoon />
         ) : (
           <>
-            {/* Stats Strip */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-2.5 mb-9">
+            {/* Stats Strip - Grid 3 columns on mobile */}
+            <div className="grid grid-cols-3 md:grid-cols-5 gap-2 mb-6 md:mb-9">
               {[
-                { num: `${subjectCount}`, label: '📚 Subjects', color: 'var(--accent)', trend: '↑ Complete list' },
-                { num: '47%', label: '✅ Progress', color: '#10b981', trend: '↑ 8% this week' },
-                { num: '200+', label: '❓ Questions', color: 'var(--color-cloud)', trend: '↑ 20 added' },
-                { num: '72%', label: '🎯 Quiz Avg', color: '#38bdf8', trend: '↑ 2% this week' },
-                { num: '2', label: '⚠️ Weak Topics', color: 'var(--error)', trend: '↓ 1 fixed' },
+                { num: `${subjectCount}`, label: '📚 Subjects', color: 'var(--accent)', trend: '↑ Complete' },
+                { num: '47%', label: '✅ Progress', color: '#10b981', trend: '↑ 8%' },
+                { num: '200+', label: '❓ Questions', color: 'var(--color-cloud)', trend: '↑ 20' },
+                { num: '72%', label: '🎯 Quiz Avg', color: '#38bdf8', trend: '↑ 2%' },
+                { num: '2', label: '⚠️ Weak', color: 'var(--error)', trend: '↓ 1' },
               ].map((stat, i) => (
-                <div key={i} className="bg-[var(--bg-overlay)] border border-[var(--border)] rounded-[var(--r-lg)] p-4 md:p-5 transition-transform hover:-translate-y-1 hover:border-[var(--border-hover)]">
-                  <div className="font-['Syne'] font-extrabold text-[28px] md:text-[32px] leading-none mb-2" style={{ color: stat.color }}>{stat.num}</div>
-                  <div className="text-[12px] md:text-[13px] font-semibold text-[var(--text-primary)] mb-1">{stat.label}</div>
-                  <div className={`text-[10px] md:text-[11px] font-mono ${stat.trend.includes('↑') && stat.color !== 'var(--error)' ? 'text-[#10b981]' : 'text-[var(--text-muted)]'}`}>{stat.trend}</div>
+                <div key={i} className={`bg-[var(--bg-overlay)] border border-[var(--border)] rounded-[var(--r-lg)] p-2 md:p-5 transition-transform hover:-translate-y-1 hover:border-[var(--border-hover)] ${i > 2 ? 'hidden md:block' : ''}`}>
+                  <div className="font-['Syne'] font-extrabold text-[18px] md:text-[32px] leading-none mb-1 text-center md:text-left" style={{ color: stat.color }}>{stat.num}</div>
+                  <div className="text-[9px] md:text-[13px] font-semibold text-[var(--text-primary)] mb-0.5 text-center md:text-left truncate">{stat.label}</div>
+                  <div className={`text-[8px] md:text-[11px] font-mono text-center md:text-left ${stat.trend.includes('↑') && stat.color !== 'var(--error)' ? 'text-[#10b981]' : 'text-[var(--text-muted)]'}`}>{stat.trend}</div>
                 </div>
               ))}
             </div>
