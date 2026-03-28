@@ -1,6 +1,5 @@
 'use client';
 
-import Navbar from "@/components/layout/Navbar";
 import { useState, useEffect } from "react";
 import { Filter, RotateCw, Check, X, Info } from "lucide-react";
 import { useDataStore } from "@/store/useDataStore";
@@ -47,8 +46,7 @@ export default function FlashcardsEngine() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[var(--bg-base)]">
-      <Navbar />
+    <div className="flex-1 flex flex-col">
       {!isLive ? <ComingSoon /> : (
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar Filters */}

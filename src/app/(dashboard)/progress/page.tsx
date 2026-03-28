@@ -1,6 +1,5 @@
 'use client';
 
-import Navbar from "@/components/layout/Navbar";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid } from 'recharts';
 import { useDataStore } from "@/store/useDataStore";
 import { useSemesterContext } from "@/hooks/useSemesterContext";
@@ -40,8 +39,7 @@ export default function ProgressPage() {
   };
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-[var(--bg-base)]">
-      <Navbar />
+    <div className="flex-1 flex flex-col overflow-hidden">
       
       {!isLive ? (
         <ComingSoon />

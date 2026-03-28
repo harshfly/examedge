@@ -33,10 +33,16 @@ export default function Navbar() {
       <nav className="h-[60px] sticky top-0 z-[100] bg-[rgba(9,9,11,0.85)] backdrop-blur-[24px] saturate-[180%] border-b border-[var(--border)]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 h-full flex items-center justify-between">
           <div className="flex items-center gap-4 md:gap-8">
-            {/* Logo */}
-            <Link href="/dashboard" className="flex items-center gap-2">
+            {/* Logo - Desktop (Home) */}
+            <Link href="/" className="hidden md:flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse"></div>
-              <span className="font-['Syne'] font-extrabold text-[16px] md:text-[18px] tracking-[-0.03em] text-[var(--text-primary)]">ExamEdge</span>
+              <span className="font-['Syne'] font-extrabold text-[18px] tracking-[-0.03em] text-[var(--text-primary)]">ExamEdge</span>
+            </Link>
+
+            {/* Logo - Mobile (Dashboard) */}
+            <Link href="/dashboard" className="flex md:hidden items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse"></div>
+              <span className="font-['Syne'] font-extrabold text-[16px] tracking-[-0.03em] text-[var(--text-primary)]">ExamEdge</span>
             </Link>
             <span className={`hidden sm:inline-block text-[10px] font-bold px-2 py-0.5 rounded-full border ${isLive ? 'bg-[var(--accent-bg)] border-[var(--accent)] text-[var(--accent)]' : 'bg-[var(--glass)] border-[var(--border)] text-[var(--text-muted)]'}`}>
               Sem {semRoman}

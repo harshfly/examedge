@@ -1,6 +1,5 @@
 'use client';
 
-import Navbar from "@/components/layout/Navbar";
 import { useState } from "react";
 import { Calendar, BrainCircuit, Play, CheckCircle2 } from "lucide-react";
 import { useSemesterContext } from "@/hooks/useSemesterContext";
@@ -16,8 +15,7 @@ export default function PlannerPage() {
   const subject = semesterSubjects.find(s => s.id === selectedSubject) || semesterSubjects[0];
 
   return (
-    <div className="h-screen flex flex-col bg-[var(--bg-base)] overflow-hidden">
-      <Navbar />
+    <div className="flex-1 flex flex-col overflow-hidden">
       
       {!isLive ? (
         <ComingSoon />

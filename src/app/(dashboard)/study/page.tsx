@@ -1,6 +1,5 @@
 'use client';
 
-import Navbar from "@/components/layout/Navbar";
 import { useDataStore } from "@/store/useDataStore";
 import { useAppStore } from "@/store/useAppStore";
 import { FolderOpen, ArrowRight, Lock } from "lucide-react";
@@ -21,8 +20,7 @@ export default function StudyIndexPage() {
   });
 
   return (
-    <div className="h-screen flex flex-col bg-[var(--bg-base)] overflow-hidden">
-      <Navbar />
+    <div className="flex-1 flex flex-col overflow-hidden">
       
       <div className="flex-1 overflow-y-auto px-6 py-10">
         <div className="max-w-[1280px] mx-auto">

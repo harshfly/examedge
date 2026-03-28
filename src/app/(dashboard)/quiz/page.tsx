@@ -3,7 +3,6 @@
 import { useDataStore } from "@/store/useDataStore";
 import { useSemesterContext } from "@/hooks/useSemesterContext";
 import { useState, useEffect } from "react";
-import Navbar from "@/components/layout/Navbar";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { Filter, CheckCircle2, AlertCircle, ChevronRight } from "lucide-react";
 
@@ -52,8 +51,7 @@ export default function QuizEngine() {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-[var(--bg-base)]">
-      <Navbar />
+    <div className="flex-1 flex flex-col overflow-hidden">
       
       {!isLive ? (
         <ComingSoon />
