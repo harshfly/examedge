@@ -38,21 +38,25 @@ export default function AdminDetailedAnalytics() {
                <ArrowUpRight className="w-4 h-4" /> +18.4% this week
              </div>
            </div>
-           <div className="h-[300px] w-full">
-             <ResponsiveContainer width="100%" height="100%">
-               <AreaChart data={chartData}>
-                 <defs>
-                   <linearGradient id="colorActive" x1="0" y1="0" x2="0" y2="1">
-                     <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3}/>
-                     <stop offset="95%" stopColor="var(--accent)" stopOpacity={0}/>
-                   </linearGradient>
-                 </defs>
-                 <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} />
-                 <Tooltip contentStyle={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border)', borderRadius: '12px' }} />
-                 <Area type="monotone" dataKey="active" stroke="var(--accent)" fillOpacity={1} fill="url(#colorActive)" strokeWidth={3} />
-               </AreaChart>
-             </ResponsiveContainer>
-           </div>
+            <div className="h-[300px] w-full flex items-center justify-center">
+              {mounted ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData}>
+                    <defs>
+                      <linearGradient id="colorActive" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="var(--accent)" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} />
+                    <Tooltip contentStyle={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border)', borderRadius: '12px' }} />
+                    <Area type="monotone" dataKey="active" stroke="var(--accent)" fillOpacity={1} fill="url(#colorActive)" strokeWidth={3} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="w-full h-full bg-[var(--glass)] rounded animate-pulse" />
+              )}
+            </div>
         </div>
 
         <div className="bg-[var(--bg-overlay)] border border-[var(--border)] rounded-[var(--r-xl)] p-8">
@@ -62,16 +66,20 @@ export default function AdminDetailedAnalytics() {
                <ArrowDownRight className="w-4 h-4" /> -2.1% since yesterday
              </div>
            </div>
-           <div className="h-[300px] w-full">
-             <ResponsiveContainer width="100%" height="100%">
-               <BarChart data={chartData}>
-                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                 <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} />
-                 <Tooltip cursor={{fill: 'rgba(255,255,255,0.03)'}} contentStyle={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border)', borderRadius: '12px' }} />
-                 <Bar dataKey="quiz" fill="var(--color-cloud)" radius={[4, 4, 0, 0]} />
-               </BarChart>
-             </ResponsiveContainer>
-           </div>
+            <div className="h-[300px] w-full flex items-center justify-center">
+              {mounted ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                    <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={12} tickLine={false} axisLine={false} />
+                    <Tooltip cursor={{fill: 'rgba(255,255,255,0.03)'}} contentStyle={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border)', borderRadius: '12px' }} />
+                    <Bar dataKey="quiz" fill="var(--color-cloud)" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="w-full h-full bg-[var(--glass)] rounded animate-pulse" />
+              )}
+            </div>
         </div>
       </div>
 

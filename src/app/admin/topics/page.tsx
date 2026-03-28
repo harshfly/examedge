@@ -8,10 +8,10 @@ import { Bold, Italic, List, ListOrdered, Quote, Heading1, Heading2, Image as Im
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useDataStore } from '@/store/useDataStore';
 import { TopicContent, TopicDiagram, KeyPoint } from '@/types';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 
-export default function TopicEditor() {
+function TopicEditorContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const topicId = searchParams.get('id') || 'cd-1-1';
@@ -466,5 +466,20 @@ export default function TopicEditor() {
 
       </div>
     </div>
+  );
+}
+
+export default function TopicEditor() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-[var(--bg-base)]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-[var(--text-secondary)] font-medium">Initializing Editor...</p>
+        </div>
+      </div>
+    }>
+      <TopicEditorContent />
+    </Suspense>
   );
 }

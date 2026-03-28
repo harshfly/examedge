@@ -60,36 +60,44 @@ export default function ProgressPage() {
               {/* WEEKLY STUDY TIME CHART */}
               <div className="bg-[var(--bg-overlay)] border border-[var(--border)] rounded-[var(--r-xl)] p-6">
                 <h3 className="text-[14px] font-bold text-[var(--text-primary)] mb-6">Study Time Trend (Last 7 Days)</h3>
-                <div className="h-[280px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={weeklyData}>
-                      <defs>
-                        <linearGradient id="colorHrs" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#6c63ff" stopOpacity={0.4}/>
-                          <stop offset="95%" stopColor="#6c63ff" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                      <XAxis dataKey="name" stroke="rgba(255,255,255,0.3)" tick={{fontSize: 12}} />
-                      <Tooltip content={<CustomTooltip />} cursor={{fill: 'rgba(255,255,255,0.02)'}} />
-                      <Area type="monotone" dataKey="hrs" stroke="#6c63ff" strokeWidth={3} fillOpacity={1} fill="url(#colorHrs)" />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                <div className="h-[280px] flex items-center justify-center">
+                  {mounted ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={weeklyData}>
+                        <defs>
+                          <linearGradient id="colorHrs" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#6c63ff" stopOpacity={0.4}/>
+                            <stop offset="95%" stopColor="#6c63ff" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                        <XAxis dataKey="name" stroke="rgba(255,255,255,0.3)" tick={{fontSize: 12}} />
+                        <Tooltip content={<CustomTooltip />} cursor={{fill: 'rgba(255,255,255,0.02)'}} />
+                        <Area type="monotone" dataKey="hrs" stroke="#6c63ff" strokeWidth={3} fillOpacity={1} fill="url(#colorHrs)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="w-full h-full bg-[var(--glass)] rounded animate-pulse" />
+                  )}
                 </div>
               </div>
 
               {/* SUBJECT MASTERY BAR CHART */}
               <div className="bg-[var(--bg-overlay)] border border-[var(--border)] rounded-[var(--r-xl)] p-6">
                 <h3 className="text-[14px] font-bold text-[var(--text-primary)] mb-6">Quiz Average by Subject</h3>
-                <div className="h-[280px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={subjectData} layout="vertical" margin={{ left: -20 }}>
-                      <XAxis type="number" hide />
-                      <YAxis dataKey="subject" type="category" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: 'rgba(255,255,255,0.6)'}} />
-                      <Tooltip content={<CustomTooltip />} cursor={{fill: 'rgba(255,255,255,0.05)'}} />
-                      <Bar dataKey="score" fill="#10b981" radius={[0, 4, 4, 0]} barSize={20} />
-                    </BarChart>
-                  </ResponsiveContainer>
+                <div className="h-[280px] flex items-center justify-center">
+                  {mounted ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={subjectData} layout="vertical" margin={{ left: -20 }}>
+                        <XAxis type="number" hide />
+                        <YAxis dataKey="subject" type="category" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: 'rgba(255,255,255,0.6)'}} />
+                        <Tooltip content={<CustomTooltip />} cursor={{fill: 'rgba(255,255,255,0.05)'}} />
+                        <Bar dataKey="score" fill="#10b981" radius={[0, 4, 4, 0]} barSize={20} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="w-full h-full bg-[var(--glass)] rounded animate-pulse" />
+                  )}
                 </div>
               </div>
             </div>
