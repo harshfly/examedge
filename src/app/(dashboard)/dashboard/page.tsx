@@ -1,6 +1,5 @@
 'use client';
 
-import Navbar from "@/components/layout/Navbar";
 import Link from "next/link";
 import { BookOpen, HelpCircle, Layers, Calendar, ChevronRight, Bookmark } from "lucide-react";
 import { useSemesterContext } from "@/hooks/useSemesterContext";
@@ -14,7 +13,6 @@ export default function DashboardPage() {
 
   return (
     <>
-      <Navbar />
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-6 md:py-10 relative z-10">
         
         {/* Breadcrumb */}

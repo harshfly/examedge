@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Navbar from '@/components/layout/Navbar';
 import { useAppStore } from '@/store/useAppStore';
 import { useDataStore } from '@/store/useDataStore';
 import { useRouter } from 'next/navigation';
@@ -69,7 +68,6 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col">
-      <Navbar />
       
       <main className="flex-1 max-w-[1280px] mx-auto w-full px-4 md:px-6 py-10 relative z-10">
         <div className="flex items-center gap-3 mb-8">

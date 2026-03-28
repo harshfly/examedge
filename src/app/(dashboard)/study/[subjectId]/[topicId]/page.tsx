@@ -1,10 +1,9 @@
 'use client';
 
 import React, { useState } from "react";
-import Navbar from "@/components/layout/Navbar";
-import Sidebar from "@/components/study/Sidebar";
-import TopicRenderer from "@/components/study/TopicRenderer";
-import TableOfContents from "@/components/study/TableOfContents";
+import Sidebar from "@/components/features/study/Sidebar";
+import TopicRenderer from "@/components/features/study/TopicRenderer";
+import TableOfContents from "@/components/features/study/TableOfContents";
 import { useDataStore } from "@/store/useDataStore";
 import { Menu, ListTree, X } from "lucide-react";
 
@@ -19,7 +18,6 @@ export default function StudyPage({ params }: { params: Promise<{ subjectId: str
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-[var(--bg-base)]">
-      <Navbar />
       
       {/* Mobile Top Controls */}
       <div className="lg:hidden flex items-center justify-between px-4 py-2 border-b border-[var(--border)] bg-[var(--bg-elevated)] z-20">
