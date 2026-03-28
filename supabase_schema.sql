@@ -65,6 +65,19 @@ CREATE TABLE IF NOT EXISTS examedge_images (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 10. User Profiles (IMPORTANT FOR LOGIN)
+CREATE TABLE IF NOT EXISTS profiles (
+    id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
+    full_name TEXT,
+    role TEXT DEFAULT 'student',
+    year INTEGER DEFAULT 3,
+    semester INTEGER DEFAULT 6,
+    streak INTEGER DEFAULT 1,
+    last_active_at TIMESTAMPTZ DEFAULT NOW(),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Enable RLS
 ALTER TABLE examedge_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE examedge_subjects ENABLE ROW LEVEL SECURITY;
@@ -75,26 +88,105 @@ ALTER TABLE examedge_diagrams ENABLE ROW LEVEL SECURITY;
 ALTER TABLE examedge_quotes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE examedge_syllabi ENABLE ROW LEVEL SECURITY;
 ALTER TABLE examedge_images ENABLE ROW LEVEL SECURITY;
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
 -- Allow public read access (for students)
+DROP POLICY IF EXISTS "Public Read Settings" ON examedge_settings;
 CREATE POLICY "Public Read Settings" ON examedge_settings FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public Read Subjects" ON examedge_subjects;
 CREATE POLICY "Public Read Subjects" ON examedge_subjects FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public Read Topics" ON examedge_topics;
 CREATE POLICY "Public Read Topics" ON examedge_topics FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public Read Quizzes" ON examedge_quizzes;
 CREATE POLICY "Public Read Quizzes" ON examedge_quizzes FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public Read Flashcards" ON examedge_flashcards;
 CREATE POLICY "Public Read Flashcards" ON examedge_flashcards FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public Read Diagrams" ON examedge_diagrams;
 CREATE POLICY "Public Read Diagrams" ON examedge_diagrams FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public Read Quotes" ON examedge_quotes;
 CREATE POLICY "Public Read Quotes" ON examedge_quotes FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public Read Syllabi" ON examedge_syllabi;
 CREATE POLICY "Public Read Syllabi" ON examedge_syllabi FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public Read Images" ON examedge_images;
 CREATE POLICY "Public Read Images" ON examedge_images FOR SELECT USING (true);
 
+-- Profile Policies
+DROP POLICY IF EXISTS "Users can read own profile" ON profiles;
+CREATE POLICY "Users can read own profile" ON profiles FOR SELECT USING (auth.uid() = id);
+
+DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
+CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
+
+DROP POLICY IF EXISTS "Admin can read all profiles" ON profiles;
+CREATE POLICY "Admin can read all profiles" ON profiles FOR SELECT USING (
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+);
+
 -- Allow all for authenticated users (admin)
--- Replace 'authenticated' with your specific admin check if needed
+DROP POLICY IF EXISTS "Admin All Settings" ON examedge_settings;
 CREATE POLICY "Admin All Settings" ON examedge_settings FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Admin All Subjects" ON examedge_subjects;
 CREATE POLICY "Admin All Subjects" ON examedge_subjects FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Admin All Topics" ON examedge_topics;
 CREATE POLICY "Admin All Topics" ON examedge_topics FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Admin All Quizzes" ON examedge_quizzes;
 CREATE POLICY "Admin All Quizzes" ON examedge_quizzes FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Admin All Flashcards" ON examedge_flashcards;
 CREATE POLICY "Admin All Flashcards" ON examedge_flashcards FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Admin All Diagrams" ON examedge_diagrams;
 CREATE POLICY "Admin All Diagrams" ON examedge_diagrams FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Admin All Quotes" ON examedge_quotes;
 CREATE POLICY "Admin All Quotes" ON examedge_quotes FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Admin All Syllabi" ON examedge_syllabi;
 CREATE POLICY "Admin All Syllabi" ON examedge_syllabi FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Admin All Images" ON examedge_images;
 CREATE POLICY "Admin All Images" ON examedge_images FOR ALL USING (true);
+
+-- Function to handle new user signup
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, full_name, role, year, semester)
+  VALUES (
+    NEW.id,
+    NEW.raw_user_meta_data->>'full_name',
+    COALESCE(NEW.raw_user_meta_data->>'role', 'student'),
+    (NEW.raw_user_meta_data->>'year')::integer,
+    (NEW.raw_user_meta_data->>'semester')::integer
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger to call function on signup
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- Backfill profiles for existing users
+INSERT INTO public.profiles (id, full_name, role, year, semester)
+SELECT 
+  id, 
+  raw_user_meta_data->>'full_name', 
+  COALESCE(raw_user_meta_data->>'role', 'student'),
+  (raw_user_meta_data->>'year')::integer,
+  (raw_user_meta_data->>'semester')::integer
+FROM auth.users
+ON CONFLICT (id) DO NOTHING;

@@ -52,9 +52,19 @@ export async function middleware(request: NextRequest) {
     if (!user) {
       // Redirect to ADMIN login, not the student one
       const redirectUrl = new URL('/admin/login', request.url);
-      // Preserve the intended destination in a search param if desired
-      // redirectUrl.searchParams.set('next', pathname);
       return NextResponse.redirect(redirectUrl);
+    }
+
+    // Role check: Only allow users with 'admin' role in their profile
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.role !== 'admin') {
+      // Redirect unauthorized users to the student dashboard
+      return NextResponse.redirect(new URL('/dashboard', request.url));
     }
   }
 
