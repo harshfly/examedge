@@ -32,6 +32,7 @@ export default function Navbar() {
     <>
       <nav className="h-[60px] sticky top-0 z-[100] bg-[rgba(9,9,11,0.85)] backdrop-blur-[24px] saturate-[180%] border-b border-[var(--border)]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 h-full flex items-center justify-between">
+          <div className="flex items-center gap-4 md:gap-8">
             {/* Logo */}
             <Link href="/dashboard" className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse"></div>
@@ -78,61 +79,8 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay/Drawer */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-[200] md:hidden">
-          {/* Backdrop */}
-          <div 
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm animate-in fade-in"
-            onClick={() => setMobileMenuOpen(false)}
-          ></div>
-          
-          {/* Drawer Content */}
-          <div className="absolute top-0 left-0 bottom-0 w-[280px] bg-[var(--bg-elevated)] border-r border-[var(--border)] shadow-2xl animate-in slide-in-from-left duration-300 flex flex-col">
-            <div className="p-6 border-b border-[var(--border)] flex items-center justify-between">
-              <Link href="/dashboard" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-                <div className="w-2 h-2 rounded-full bg-[var(--accent)]"></div>
-                <span className="font-['Syne'] font-extrabold text-[18px] tracking-[-0.03em] text-[var(--text-primary)]">ExamEdge</span>
-              </Link>
-              <button onClick={() => setMobileMenuOpen(false)} className="p-2 text-[var(--text-muted)] hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="flex-1 overflow-y-auto py-6 px-4">
-              <div className="flex flex-col gap-2">
-                {links.map((link) => {
-                  const isActive = pathname.startsWith(link.href);
-                  return (
-                    <Link 
-                      key={link.href} 
-                      href={link.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center justify-between p-4 rounded-[var(--r-lg)] transition-all group border
-                        ${isActive 
-                          ? 'bg-[var(--accent-bg)] border-[var(--accent)]' 
-                          : 'bg-[var(--glass)] border-transparent hover:border-[var(--border)]'
-                        }`}
-                    >
-                      <span className={`text-[15px] font-semibold ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}`}>{link.label}</span>
-                      <ChevronRight className={`w-4 h-4 transition-colors ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)] team-hover:text-[var(--accent)]'}`} />
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-            
-            <div className="p-6 border-t border-[var(--border)] space-y-4">
-              <Link href={mounted && user ? "/profile" : "/login"} onClick={() => setMobileMenuOpen(false)} className="btn-secondary w-full py-3 flex items-center justify-center gap-2">
-                <User className="w-4 h-4" /> {mounted && user ? "Profile & Settings" : "Login"}
-              </Link>
-
-            </div>
-          </div>
-        </div>
-      )}
       {/* Mobile Bottom Navigation Bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-[rgba(9,9,11,0.8)] backdrop-blur-[20px] border-t border-[var(--border)] px-2 pb-safe-area">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-[rgba(9,9,11,0.8)] backdrop-blur-[20px] border-t border-[var(--border)] px-2 pb-safe-area shadow-[0_-10px_40px_rgba(0,0,0,0.4)]">
         <div className="flex items-center justify-around h-[64px]">
           {[
             { href: '/dashboard', label: 'Home', icon: LayoutDashboard },
@@ -159,13 +107,6 @@ export default function Navbar() {
           })}
         </div>
       </div>
-
-      {/* Global Bottom Padding for Mobile (to avoid bottom nav overlap) */}
-      <style jsx global>{`
-        @media (max-width: 768px) {
-          body { padding-bottom: 70px; }
-        }
-      `}</style>
     </>
   );
 }
