@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { User, Menu, X, ChevronRight } from "lucide-react";
+import { User, Menu, X, ChevronRight, LayoutDashboard, BookOpen, Brain, HelpCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useSemesterContext } from "@/hooks/useSemesterContext";
@@ -32,15 +32,6 @@ export default function Navbar() {
     <>
       <nav className="h-[60px] sticky top-0 z-[100] bg-[rgba(9,9,11,0.85)] backdrop-blur-[24px] saturate-[180%] border-b border-[var(--border)]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 h-full flex items-center justify-between">
-          <div className="flex items-center gap-4 md:gap-8">
-            {/* Mobile Menu Toggle */}
-            <button 
-              onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden p-2 -ml-2 text-[var(--text-secondary)] hover:text-white"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-
             {/* Logo */}
             <Link href="/dashboard" className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse"></div>
@@ -140,6 +131,41 @@ export default function Navbar() {
           </div>
         </div>
       )}
+      {/* Mobile Bottom Navigation Bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-[rgba(9,9,11,0.8)] backdrop-blur-[20px] border-t border-[var(--border)] px-2 pb-safe-area">
+        <div className="flex items-center justify-around h-[64px]">
+          {[
+            { href: '/dashboard', label: 'Home', icon: LayoutDashboard },
+            { href: '/study', label: 'Study', icon: BookOpen },
+            { href: '/quiz', label: 'Quiz', icon: HelpCircle },
+            { href: '/flashcards', label: 'Flash', icon: Brain },
+            { href: '/profile', label: 'Me', icon: User },
+          ].map((tab) => {
+            const isActive = pathname.startsWith(tab.href);
+            const Icon = tab.icon;
+            return (
+              <Link 
+                key={tab.href}
+                href={tab.href}
+                className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 transition-all
+                  ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)] hover:text-white'}`}
+              >
+                <div className={`p-1.5 rounded-xl transition-all ${isActive ? 'bg-[var(--accent-bg)]' : ''}`}>
+                  <Icon className={`w-5 h-5 ${isActive ? 'animate-in zoom-in-75' : ''}`} />
+                </div>
+                <span className="text-[10px] font-bold tracking-tight uppercase">{tab.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Global Bottom Padding for Mobile (to avoid bottom nav overlap) */}
+      <style jsx global>{`
+        @media (max-width: 768px) {
+          body { padding-bottom: 70px; }
+        }
+      `}</style>
     </>
   );
 }
