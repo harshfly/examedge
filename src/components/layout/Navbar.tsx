@@ -23,7 +23,7 @@ export default function Navbar() {
     { href: '/dashboard', label: 'Dashboard' },
     { href: '/study', label: 'Study' },
     { href: '/quiz', label: 'Quiz' },
-    { href: '/flashcards', label: 'Flashcards' },
+    { href: '/flashcards', label: 'Neural Recall' },
     { href: '/progress', label: 'Progress' },
     { href: '/planner', label: 'Planner' },
   ];
@@ -99,7 +99,7 @@ export default function Navbar() {
             { href: '/dashboard', label: 'Home', icon: LayoutDashboard },
             { href: '/study', label: 'Study', icon: BookOpen },
             { href: '/quiz', label: 'Quiz', icon: HelpCircle },
-            { href: '/flashcards', label: 'Flash', icon: Brain },
+            { href: '/flashcards', label: 'Recall', icon: Brain },
             { href: '/profile', label: 'Me', icon: User },
           ].map((tab) => {
             const isActive = pathname.startsWith(tab.href);

@@ -33,7 +33,7 @@ export default function FlashcardsEngine() {
   };
 
   const handleDifficulty = (rating: 'easy' | 'medium' | 'hard') => {
-    // In real app, calculate Spaced Repetition (SuperMemo-2 algorithm)
+    // In real app, calculate Neural Recall (SuperMemo-2 algorithm)
     if (currentCard < cards.length - 1) {
       setCurrentCard(currentCard + 1);
       setIsFlipped(false);
@@ -116,8 +116,8 @@ export default function FlashcardsEngine() {
               <div className="w-20 h-20 rounded-[20px] bg-[#6c63ff20] border border-[#6c63ff50] flex items-center justify-center text-[32px] mx-auto mb-6 transform rotate-3">
                 🃏
               </div>
-              <h1 className="h1 mb-2">Spaced Repetition</h1>
-              <p className="body-lg text-[var(--text-secondary)] mb-8">Master concepts using active recall algorithms optimized for long-term retention.</p>
+              <h1 className="h1 mb-2">Neural Recall</h1>
+              <p className="body-lg text-[var(--text-secondary)] mb-8">Master concepts using active recall algorithms optimized for peak long-term retention.</p>
               
               <div className="bg-[var(--bg-overlay)] border border-[var(--border)] rounded-[var(--r-lg)] p-6 mb-8 text-left flex gap-4">
                 <Info className="w-6 h-6 text-[#38bdf8] flex-shrink-0" />

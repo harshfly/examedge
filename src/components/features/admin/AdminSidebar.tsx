@@ -23,7 +23,7 @@ export default function AdminSidebar() {
       title: 'ASSESSMENT',
       items: [
         { href: '/admin/quiz', label: 'Quiz Questions', icon: <HelpCircle className="w-4 h-4" /> },
-        { href: '/admin/flashcards', label: 'Flashcards', icon: <Layers className="w-4 h-4" /> },
+        { href: '/admin/flashcards', label: 'Neural Recall', icon: <Layers className="w-4 h-4" /> },
       ]
     },
     {
