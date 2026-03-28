@@ -17,16 +17,16 @@ export default function DataSyncProvider({ children }: { children: React.ReactNo
 
       // 2. Sync user session if not already in store
       if (!user) {
-        console.log("DataSyncProvider: No local user, checking Supabase session...");
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        console.log("DataSyncProvider: No local user, validating Supabase session with getUser()...");
+        const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
         
-        if (session?.user) {
-          console.log("DataSyncProvider: Session found for", session.user.email);
+        if (authUser) {
+          console.log("DataSyncProvider: Authenticated user found:", authUser.email);
           // 3. Robust Profile Fetch or Fallback Create
           let { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('*')
-            .eq('id', session.user.id)
+            .eq('id', authUser.id)
             .single();
 
           if (profileError) console.error("DataSyncProvider: Profile fetch error", profileError);
@@ -37,11 +37,11 @@ export default function DataSyncProvider({ children }: { children: React.ReactNo
             const { data: createdProfile, error: createError } = await supabase
               .from('profiles')
               .upsert({
-                id: session.user.id,
-                full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
-                role: session.user.user_metadata?.role || 'student',
-                year: session.user.user_metadata?.year || 3,
-                semester: session.user.user_metadata?.semester || 6,
+                id: authUser.id,
+                full_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'User',
+                role: authUser.user_metadata?.role || 'student',
+                year: authUser.user_metadata?.year || 3,
+                semester: authUser.user_metadata?.semester || 6,
                 streak: 1,
                 last_active_at: new Date().toISOString()
               })
@@ -55,7 +55,7 @@ export default function DataSyncProvider({ children }: { children: React.ReactNo
           if (profile) {
             console.log("DataSyncProvider: Syncing user to store:", profile.full_name);
             login({
-              id: session.user.id,
+              id: authUser.id,
               name: profile.full_name,
               role: profile.role as 'student' | 'admin',
               selectedYear: profile.year,
