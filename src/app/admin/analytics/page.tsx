@@ -1,9 +1,13 @@
 'use client';
 
+import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from "recharts";
 import { ArrowDownRight, ArrowUpRight, Filter } from "lucide-react";
 
 export default function AdminDetailedAnalytics() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const chartData = [
     { name: 'Mon', active: 1200, quiz: 450 },
     { name: 'Tue', active: 2100, quiz: 800 },

@@ -7,8 +7,10 @@ import { createClient } from "@/lib/supabase/client";
 
 export default function AdminDashboard() {
   const [studentCount, setStudentCount] = useState<number | string>("...");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const fetchStats = async () => {
       const supabase = createClient();
       const { count, error } = await supabase
@@ -85,14 +87,18 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-[var(--bg-overlay)] border border-[var(--border)] rounded-[var(--r-xl)] p-8">
           <h3 className="text-[14px] font-bold text-[var(--text-primary)] mb-6">Subject Engagement Analytics</h3>
-          <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-[300px] w-full flex items-center justify-center">
+            {mounted ? (
+              <ResponsiveContainer width="100%" height="100%">
                <BarChart data={chartData}>
                   <XAxis dataKey="name" tick={{fontSize: 12, fill: 'rgba(255,255,255,0.6)'}} axisLine={false} tickLine={false} />
                   <Tooltip cursor={{fill: 'rgba(255,255,255,0.05)'}} contentStyle={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border)', borderRadius: '8px', color: 'white' }} />
                   <Bar dataKey="views" radius={[4, 4, 0, 0]} />
                </BarChart>
-            </ResponsiveContainer>
+              </ResponsiveContainer>
+            ) : (
+              <div className="w-full h-full bg-[var(--glass)] rounded animate-pulse" />
+            )}
           </div>
         </div>
 

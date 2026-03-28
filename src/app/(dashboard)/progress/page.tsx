@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from "react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid } from 'recharts';
 import { useDataStore } from "@/store/useDataStore";
 import { useSemesterContext } from "@/hooks/useSemesterContext";
@@ -8,6 +9,9 @@ import ComingSoon from "@/components/ui/ComingSoon";
 export default function ProgressPage() {
   const { quizzes, flashcards } = useDataStore();
   const { semesterSubjects, isLive, semRoman } = useSemesterContext();
+  
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   
   const weeklyData = [
     { name: 'Mon', hrs: 1.2 }, { name: 'Tue', hrs: 2.5 },
