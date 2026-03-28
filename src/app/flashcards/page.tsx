@@ -1,14 +1,16 @@
 'use client';
 
 import Navbar from "@/components/layout/Navbar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Filter, RotateCw, Check, X, Info } from "lucide-react";
 import { useDataStore } from "@/store/useDataStore";
+import { useSemesterContext } from "@/hooks/useSemesterContext";
+import ComingSoon from "@/components/ui/ComingSoon";
 import Link from "next/link";
-import { useEffect } from "react";
 
 export default function FlashcardsEngine() {
-  const { flashcards, subjects } = useDataStore();
+  const { flashcards } = useDataStore();
+  const { semesterSubjects, isLive, semRoman } = useSemesterContext();
   const [deckActive, setDeckActive] = useState(false);
   const [currentCard, setCurrentCard] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -20,11 +22,12 @@ export default function FlashcardsEngine() {
     setIsFlipped(false);
   }, [selectedSubjectId]);
 
+  const semFlashcards = flashcards.filter(f => semesterSubjects.some(s => s.id === f.subjectId));
   const cards = selectedSubjectId === 'all' 
-    ? flashcards 
-    : flashcards.filter(card => card.subjectId === selectedSubjectId);
+    ? semFlashcards 
+    : semFlashcards.filter(card => card.subjectId === selectedSubjectId);
 
-  const currentSubject = subjects.find(s => s.id === (cards[currentCard]?.subjectId || (selectedSubjectId !== 'all' ? selectedSubjectId : ''))) || subjects[0];
+  const currentSubject = semesterSubjects.find(s => s.id === (cards[currentCard]?.subjectId || (selectedSubjectId !== 'all' ? selectedSubjectId : ''))) || semesterSubjects[0];
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
@@ -46,7 +49,7 @@ export default function FlashcardsEngine() {
   return (
     <div className="flex flex-col h-screen bg-[var(--bg-base)]">
       <Navbar />
-      
+      {!isLive ? <ComingSoon /> : (
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar Filters */}
         {!deckActive && (
@@ -61,10 +64,10 @@ export default function FlashcardsEngine() {
                 `}
               >
                 <span>All Subjects</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--glass-light)] font-bold">{flashcards.length}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--glass-light)] font-bold">{semFlashcards.length}</span>
               </button>
-              {subjects.map(sub => {
-                const subCount = flashcards.filter(f => f.subjectId === sub.id).length;
+              {semesterSubjects.map(sub => {
+                const subCount = semFlashcards.filter(f => f.subjectId === sub.id).length;
                 return (
                   <button 
                     key={sub.id} 
@@ -196,6 +199,7 @@ export default function FlashcardsEngine() {
 
         </div>
       </div>
+      )}
     </div>
   );
 }

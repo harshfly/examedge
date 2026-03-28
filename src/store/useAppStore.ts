@@ -7,14 +7,17 @@ interface User {
   role: 'student' | 'admin';
   selectedYear: number | null;
   selectedSem: number | null;
+  streak: number;
+  lastActiveAt: string;
 }
 
 interface AppState {
   user: User | null;
   theme: 'dark' | 'light';
   isAuthHydrated: boolean;
-  login: (userData: Omit<User, 'id'>) => void;
+  login: (userData: User) => void;
   logout: () => void;
+  updateStreak: (streak: number) => void;
   setSemesterContext: (year: number, sem: number) => void;
   setHydrated: () => void;
 }
@@ -27,13 +30,14 @@ export const useAppStore = create<AppState>()(
       isAuthHydrated: false,
       
       login: (userData) => set({ 
-        user: { 
-          id: Math.random().toString(36).substring(7), 
-          ...userData 
-        } 
+        user: userData 
       }),
       
       logout: () => set({ user: null }),
+
+      updateStreak: (streak) => set((state) => ({
+        user: state.user ? { ...state.user, streak } : null
+      })),
       
       setSemesterContext: (year, sem) => set((state) => ({
         user: state.user ? { ...state.user, selectedYear: year, selectedSem: sem } : null

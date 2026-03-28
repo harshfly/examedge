@@ -2,7 +2,8 @@
 
 import { TopicContent, Subject } from '@/types';
 import { Bookmark, Copy, Check } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface TopicRendererProps {
   topic: TopicContent;
@@ -11,6 +12,20 @@ interface TopicRendererProps {
 
 export default function TopicRenderer({ topic, subject }: TopicRendererProps) {
   const [notes, setNotes] = useState('');
+  const router = useRouter();
+
+  // Navigation Logic
+  const unit = subject.units.find(u => u.no === topic.unitNo);
+  const topicsInUnit = unit?.topics || [];
+  const currentIndex = topicsInUnit.findIndex(t => t.id === topic.id);
+  const totalInUnit = topicsInUnit.length;
+  const completedInUnit = topicsInUnit.filter(t => t.isCompleted).length;
+
+  const navigateTo = (index: number) => {
+    if (index >= 0 && index < totalInUnit) {
+      router.push(`/study/${subject.id}/${topicsInUnit[index].id}`);
+    }
+  };
 
   return (
     <div className="h-full min-h-0 overflow-y-auto bg-[var(--bg-base)] scroll-smooth relative">
@@ -58,6 +73,16 @@ export default function TopicRenderer({ topic, subject }: TopicRendererProps) {
             dangerouslySetInnerHTML={{ __html: topic.definition }} 
           />
         </div>
+
+        {/* BLOCK 2.5 - CUSTOM SECTIONS (THEORY / REAL WORLD USE) */}
+        {topic.customSections && topic.customSections.map(section => (
+          <div key={section.id} id={section.id} className="mb-10">
+            <div className="label mb-3 text-[var(--accent)] font-bold uppercase">{section.title}</div>
+            <div className="bg-[var(--bg-overlay)] border border-[var(--border)] rounded-[var(--r-lg)] p-6 text-[15px] leading-relaxed text-[#c8c8e0] whitespace-pre-wrap" 
+              dangerouslySetInnerHTML={{ __html: section.content }} 
+            />
+          </div>
+        ))}
 
         {/* BLOCK 3 - DIAGRAMS */}
         {topic.diagrams && topic.diagrams.length > 0 && (
@@ -229,6 +254,7 @@ export default function TopicRenderer({ topic, subject }: TopicRendererProps) {
         <div className="mb-8">
           <div className="label mb-3 text-[var(--text-muted)]">📝 MY NOTES</div>
           <textarea 
+            id="notes"
             className="input-field min-h-[120px] resize-y"
             placeholder="Add your personal notes here..."
             value={notes}
@@ -239,12 +265,64 @@ export default function TopicRenderer({ topic, subject }: TopicRendererProps) {
         {/* BOTTOM NAVIGATION BAR */}
         <div className="pt-7 border-t border-[var(--border)] flex flex-col md:flex-row items-center justify-between gap-4 mt-8">
           <div className="flex w-full md:flex-1 gap-2">
-            <button className="btn-secondary flex-1 py-3 text-[13px] md:text-[14px]">← Prev</button>
-            <button className="btn-secondary flex-1 py-3 text-[13px] md:text-[14px]">Next →</button>
+            <button 
+              onClick={() => navigateTo(currentIndex - 1)}
+              disabled={currentIndex <= 0}
+              className="btn-secondary flex-1 py-3 text-[13px] md:text-[14px] disabled:opacity-30"
+            >
+              ← Prev
+            </button>
+            <button 
+              onClick={() => navigateTo(currentIndex + 1)}
+              disabled={currentIndex >= totalInUnit - 1}
+              className="btn-secondary flex-1 py-3 text-[13px] md:text-[14px] disabled:opacity-30"
+            >
+              Next →
+            </button>
           </div>
-          <button className="btn-success w-full md:w-auto py-3 px-6 flex items-center justify-center gap-2">
+          <button 
+            onClick={async () => {
+              const { useAppStore } = await import('@/store/useAppStore');
+              const { useDataStore } = await import('@/store/useDataStore');
+              const { createClient } = await import('@/lib/supabase/client');
+              const { toast } = await import('sonner');
+              
+              const user = useAppStore.getState().user;
+              if (!user) {
+                toast.error('Please login to save your progress.');
+                return;
+              }
+              
+              const supabase = createClient();
+              const authUser = user.id.includes('-') ? user.id : (await supabase.auth.getUser()).data.user?.id;
+              
+              if (!authUser) {
+                toast.error('Session expired. Please login again.');
+                return;
+              }
+
+              const { error } = await supabase
+                .from('user_progress')
+                .upsert({ 
+                  user_id: authUser, 
+                  subject_id: subject.id, 
+                  topic_id: topic.id, 
+                  completed: true 
+                }, { onConflict: 'user_id,subject_id,topic_id' });
+                
+              if (error) {
+                toast.error('Failed to save progress to cloud.');
+                console.error(error);
+              } else {
+                toast.success('Progress saved!');
+                // Update local store as well
+                const saveTopic = useDataStore.getState().saveTopic;
+                saveTopic(topic.id, { ...topic, isCompleted: true });
+              }
+            }}
+            className={`w-full md:w-auto py-3 px-6 flex items-center justify-center gap-2 ${topic.isCompleted ? 'bg-[#10b981] text-[var(--bg-base)]' : 'btn-success'}`}>
             <Check strokeWidth={3} className="w-4 h-4" />
-            Mark Complete
+            {topic.isCompleted ? 'Completed' : 'Mark Complete'}
           </button>
         </div>
       </div>

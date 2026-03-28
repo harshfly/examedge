@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AnimatedBackground from '@/components/layout/AnimatedBackground';
 import LandingNavbar from '@/components/layout/LandingNavbar';
+import CreatorFooter from '@/components/layout/CreatorFooter';
 import { useDataStore } from '@/store/useDataStore';
 
 export default function LandingPage() {
@@ -144,6 +145,7 @@ export default function LandingPage() {
         </button>
 
         </div>
+        <CreatorFooter />
       </div>
     </>
   );

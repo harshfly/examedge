@@ -1,11 +1,23 @@
 'use client';
 
 import Link from "next/link";
-import { Moon, Search, Settings, Menu, X, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { User, Menu, X, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { useSemesterContext } from "@/hooks/useSemesterContext";
+import { useHydrateProgress } from "@/hooks/useHydrateProgress";
+import { useAppStore } from "@/store/useAppStore";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { semRoman, isLive } = useSemesterContext();
+  const user = useAppStore(state => state.user);
+  const pathname = usePathname();
+  
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  
+  useHydrateProgress();
 
   const links = [
     { href: '/dashboard', label: 'Dashboard' },
@@ -34,39 +46,43 @@ export default function Navbar() {
               <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse"></div>
               <span className="font-['Syne'] font-extrabold text-[16px] md:text-[18px] tracking-[-0.03em] text-[var(--text-primary)]">ExamEdge</span>
             </Link>
+            <span className={`hidden sm:inline-block text-[10px] font-bold px-2 py-0.5 rounded-full border ${isLive ? 'bg-[var(--accent-bg)] border-[var(--accent)] text-[var(--accent)]' : 'bg-[var(--glass)] border-[var(--border)] text-[var(--text-muted)]'}`}>
+              Sem {semRoman}
+            </span>
 
             {/* Desktop Nav Links */}
             <div className="hidden md:flex items-center gap-1">
-              {links.map((link) => (
-                <Link 
-                  key={link.href} 
-                  href={link.href}
-                  className="text-[13px] font-medium text-[var(--text-secondary)] px-3 py-1.5 rounded-[var(--r-md)] transition-all duration-200 hover:bg-[var(--glass)] hover:text-[var(--text-primary)]"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {links.map((link) => {
+                const isActive = pathname.startsWith(link.href);
+                return (
+                  <Link 
+                    key={link.href} 
+                    href={link.href}
+                    className={`text-[13px] font-medium px-3 py-1.5 rounded-[var(--r-md)] transition-all duration-200 
+                      ${isActive 
+                        ? 'bg-[var(--glass)] text-[var(--text-primary)] border border-[var(--border)]' 
+                        : 'text-[var(--text-secondary)] hover:bg-[var(--glass)] hover:text-[var(--text-primary)]'
+                      }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
             </div>
           </div>
 
           {/* Right Section */}
           <div className="flex items-center gap-2 md:gap-4">
             <div className="bg-[rgba(249,115,22,0.15)] border border-[rgba(249,115,22,0.3)] text-[#f97316] rounded-full px-2 md:px-3 py-1 text-[10px] md:text-[12px] font-bold flex items-center gap-1">
-              🔥 5
+              🔥 {user?.streak || 1}
             </div>
             
-            <button className="btn-icon hidden sm:flex">
-              <Search className="w-4 h-4 text-[var(--text-secondary)]" />
-            </button>
-            
-            <Link href="/admin" className="btn-ghost hidden sm:flex items-center gap-1.5 text-[var(--accent)] !text-[12px]">
-              <Settings className="w-3.5 h-3.5" />
-              Admin
+            <Link href={mounted && user ? "/profile" : "/login"} className="btn-ghost hidden sm:flex items-center gap-1.5 text-[var(--accent)] !text-[12px]">
+              <User className="w-3.5 h-3.5" />
+              {mounted && user ? "Profile" : "Login"}
             </Link>
             
-            <button className="btn-icon">
-              <Moon className="w-4 h-4 text-[var(--text-secondary)]" />
-            </button>
+
           </div>
         </div>
       </nav>
@@ -94,27 +110,32 @@ export default function Navbar() {
             
             <div className="flex-1 overflow-y-auto py-6 px-4">
               <div className="flex flex-col gap-2">
-                {links.map((link) => (
-                  <Link 
-                    key={link.href} 
-                    href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-between p-4 rounded-[var(--r-lg)] bg-[var(--glass)] border border-transparent hover:border-[var(--border)] group transition-all"
-                  >
-                    <span className="text-[15px] font-semibold text-[var(--text-primary)]">{link.label}</span>
-                    <ChevronRight className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--accent)] transition-colors" />
-                  </Link>
-                ))}
+                {links.map((link) => {
+                  const isActive = pathname.startsWith(link.href);
+                  return (
+                    <Link 
+                      key={link.href} 
+                      href={link.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center justify-between p-4 rounded-[var(--r-lg)] transition-all group border
+                        ${isActive 
+                          ? 'bg-[var(--accent-bg)] border-[var(--accent)]' 
+                          : 'bg-[var(--glass)] border-transparent hover:border-[var(--border)]'
+                        }`}
+                    >
+                      <span className={`text-[15px] font-semibold ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'}`}>{link.label}</span>
+                      <ChevronRight className={`w-4 h-4 transition-colors ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)] team-hover:text-[var(--accent)]'}`} />
+                    </Link>
+                  );
+                })}
               </div>
             </div>
             
             <div className="p-6 border-t border-[var(--border)] space-y-4">
-              <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="btn-secondary w-full py-3 flex items-center justify-center gap-2">
-                <Settings className="w-4 h-4" /> Admin Panel
+              <Link href={mounted && user ? "/profile" : "/login"} onClick={() => setMobileMenuOpen(false)} className="btn-secondary w-full py-3 flex items-center justify-center gap-2">
+                <User className="w-4 h-4" /> {mounted && user ? "Profile & Settings" : "Login"}
               </Link>
-              <button className="btn-ghost w-full py-3 flex items-center justify-center gap-2 text-[var(--text-muted)]">
-                <Search className="w-4 h-4" /> Search Topics
-              </button>
+
             </div>
           </div>
         </div>

@@ -2,10 +2,29 @@
 
 import { Users, BookOpen, Brain, Activity, ArrowUpRight } from "lucide-react";
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function AdminDashboard() {
+  const [studentCount, setStudentCount] = useState<number | string>("...");
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const supabase = createClient();
+      const { count, error } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .eq('role', 'student');
+      
+      if (!error && count !== null) {
+        setStudentCount(count);
+      }
+    };
+    fetchStats();
+  }, []);
+
   const stats = [
-    { label: "Total Students", value: "3,142", icon: Users, color: "#10b981", trend: "+12%" },
+    { label: "Total Students", value: studentCount.toString(), icon: Users, color: "#10b981", trend: "Real-time" },
     { label: "Active Subjects", value: "7", icon: BookOpen, color: "#f97316", trend: "0" },
     { label: "Quiz Completed", value: "14.2K", icon: Brain, color: "#38bdf8", trend: "+45%" },
     { label: "Avg Platform Engagement", value: "48m/Day", icon: Activity, color: "#6c63ff", trend: "+5%" },

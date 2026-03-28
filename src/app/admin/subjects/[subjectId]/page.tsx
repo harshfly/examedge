@@ -13,6 +13,9 @@ export default function SubjectDetailsManager({ params }: { params: Promise<{ su
   const subject = subjects.find(s => s.id === subjectId);
   
   const [isAddingUnit, setIsAddingUnit] = useState(false);
+  const [editingUnit, setEditingUnit] = useState<{ no: string, title: string, hours: number } | null>(null);
+  const [isEditingCode, setIsEditingCode] = useState(false);
+  const [subjectCode, setSubjectCode] = useState(subject?.code || '');
   const [newUnit, setNewUnit] = useState({ no: '', title: '', hours: 0 });
   const [unitAddingTopic, setUnitAddingTopic] = useState<string | null>(null);
   const [newTopicName, setNewTopicName] = useState('');
@@ -26,6 +29,20 @@ export default function SubjectDetailsManager({ params }: { params: Promise<{ su
     });
     setIsAddingUnit(false);
     setNewUnit({ no: '', title: '', hours: 0 });
+  };
+
+  const handleUpdateUnit = () => {
+    if (!editingUnit) return;
+    const updatedUnits = subject.units.map(u => 
+      u.no === editingUnit.no ? { ...u, title: editingUnit.title, hours: editingUnit.hours } : u
+    );
+    updateSubject(subject.id, { units: updatedUnits });
+    setEditingUnit(null);
+  };
+
+  const saveSubjectCode = () => {
+    updateSubject(subject.id, { code: subjectCode });
+    setIsEditingCode(false);
   };
 
   const deleteUnit = (no: string) => {
@@ -100,7 +117,27 @@ export default function SubjectDetailsManager({ params }: { params: Promise<{ su
 
       <div className="bg-[var(--bg-overlay)] border border-[var(--border)] rounded-[var(--r-xl)] p-5 mb-8 flex justify-between items-center">
         <div className="flex gap-6 text-[13px]">
-          <div><span className="text-[var(--text-muted)]">Code:</span> <strong className="text-white">{subject.code}</strong></div>
+          <div className="flex items-center gap-2">
+            <span className="text-[var(--text-muted)]">Code:</span> 
+            {isEditingCode ? (
+              <div className="flex items-center gap-2">
+                <input 
+                  className="input-field py-1 px-2 w-[120px] font-bold h-8" 
+                  value={subjectCode} 
+                  onChange={e => setSubjectCode(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && saveSubjectCode()}
+                />
+                <button onClick={saveSubjectCode} className="text-[#10b981] hover:underline font-bold">Save</button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 group">
+                <strong className="text-white">{subject.code}</strong>
+                <button onClick={() => setIsEditingCode(true)} className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:text-[var(--accent)]">
+                  <Edit2 className="w-3 h-3" />
+                </button>
+              </div>
+            )}
+          </div>
           <div><span className="text-[var(--text-muted)]">Total Units:</span> <strong className="text-white">{subject.units.length}</strong></div>
         </div>
         <button onClick={() => setIsAddingUnit(true)} className="btn-primary flex items-center gap-2 py-2">
@@ -112,13 +149,42 @@ export default function SubjectDetailsManager({ params }: { params: Promise<{ su
         <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[var(--r-lg)] p-5 mb-6 animate-in fade-in">
           <h4 className="font-bold text-[14px] mb-3">Add New Unit Target</h4>
           <div className="flex gap-4 mb-4">
-            <input className="input-field w-[100px]" placeholder="Unit No (e.g. VI)" value={newUnit.no} onChange={e=>setNewUnit({...newUnit, no: e.target.value})} />
-            <input className="input-field flex-1" placeholder="Unit Title" value={newUnit.title} onChange={e=>setNewUnit({...newUnit, title: e.target.value})} />
-            <input className="input-field w-[120px]" type="number" placeholder="Hours" value={newUnit.hours || ''} onChange={e=>setNewUnit({...newUnit, hours: parseInt(e.target.value)})} />
+            <div className="flex-col gap-1.5 flex w-[120px]">
+              <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase ml-1">Unit No</label>
+              <input className="input-field" placeholder="e.g. VI" value={newUnit.no} onChange={e=>setNewUnit({...newUnit, no: e.target.value})} />
+            </div>
+            <div className="flex-col gap-1.5 flex flex-1">
+              <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase ml-1">Unit Name</label>
+              <input className="input-field" placeholder="Full name of unit..." value={newUnit.title} onChange={e=>setNewUnit({...newUnit, title: e.target.value})} />
+            </div>
+            <div className="flex-col gap-1.5 flex w-[100px]">
+              <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase ml-1">Hours</label>
+              <input className="input-field" type="number" placeholder="Hrs" value={newUnit.hours || ''} onChange={e=>setNewUnit({...newUnit, hours: parseInt(e.target.value)})} />
+            </div>
           </div>
           <div className="flex justify-end gap-2">
             <button onClick={() => setIsAddingUnit(false)} className="btn-ghost">Cancel</button>
             <button onClick={handleAddUnit} className="btn-success">Save Unit</button>
+          </div>
+        </div>
+      )}
+
+      {editingUnit && (
+        <div className="bg-[#1a1a2e] border border-[var(--accent)] rounded-[var(--r-lg)] p-5 mb-6 shadow-xl shadow-[var(--accent)]/10">
+          <h4 className="font-bold text-[14px] mb-3 text-[var(--accent)]">Modifying Unit {editingUnit.no}</h4>
+          <div className="flex gap-4 mb-4">
+            <div className="flex-col gap-1.5 flex flex-1">
+              <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase ml-1">Unit Name</label>
+              <input className="input-field" value={editingUnit.title} onChange={e=>setEditingUnit({...editingUnit, title: e.target.value})} />
+            </div>
+            <div className="flex-col gap-1.5 flex w-[100px]">
+              <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase ml-1">Hours</label>
+              <input className="input-field" type="number" value={editingUnit.hours || ''} onChange={e=>setEditingUnit({...editingUnit, hours: parseInt(e.target.value)})} />
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <button onClick={() => setEditingUnit(null)} className="btn-ghost">Discard</button>
+            <button onClick={handleUpdateUnit} className="btn-primary py-2 px-6">Apply Changes</button>
           </div>
         </div>
       )}
@@ -133,8 +199,8 @@ export default function SubjectDetailsManager({ params }: { params: Promise<{ su
                 <span className="text-[12px] text-[var(--text-muted)] ml-2">{unit.hours}h</span>
               </div>
               <div className="flex gap-2">
-                <button className="text-[var(--text-muted)] hover:text-white"><Edit2 className="w-3.5 h-3.5" /></button>
-                <button onClick={() => confirm('Delete Unit?') && deleteUnit(unit.no)} className="text-[var(--error)] hover:opacity-80"><Trash2 className="w-3.5 h-3.5" /></button>
+                <button onClick={() => setEditingUnit({ no: unit.no, title: unit.title, hours: unit.hours })} className="text-[var(--text-muted)] hover:text-white p-1 hover:bg-white/5 rounded transition-all"><Edit2 className="w-3.5 h-3.5" /></button>
+                <button onClick={() => confirm('Delete Unit?') && deleteUnit(unit.no)} className="text-[var(--error)] hover:opacity-80 p-1 hover:bg-red-500/10 rounded transition-all"><Trash2 className="w-3.5 h-3.5" /></button>
               </div>
             </div>
             

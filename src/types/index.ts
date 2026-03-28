@@ -74,6 +74,12 @@ export interface TopicContent {
   videoUrl?: string;        // [OPTIONAL] embedded YouTube URL
   updatedAt: string;
   updatedBy?: string;
+  isCompleted?: boolean;    // local execution state
+  customSections?: {
+    id: string;
+    title: string;
+    content: string;
+  }[];
 }
 
 export interface TopicDiagram {

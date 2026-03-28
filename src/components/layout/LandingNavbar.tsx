@@ -10,8 +10,8 @@ export default function LandingNavbar() {
           <span className="font-['Syne'] font-extrabold text-[18px] tracking-[-0.03em] text-[#f0f0f8]">ExamEdge</span>
         </Link>
         <div className="flex items-center gap-4">
-          <Link href="/admin/login" className="btn-ghost flex items-center justify-center">
-            Admin →
+          <Link href="/login" className="btn-ghost flex items-center justify-center">
+            Login →
           </Link>
           <button className="btn-icon">
             <Moon className="w-4 h-4 text-[#a0a0c0]" />

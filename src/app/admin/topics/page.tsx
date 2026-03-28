@@ -74,6 +74,11 @@ export default function TopicEditor() {
     setFormData({ ...formData, summary: [...(formData.summary || []), 'New summary point...'] });
   };
 
+  const addCustomSection = () => {
+    const newSection = { id: `sec-${Date.now()}`, title: 'New Category (e.g. Real World Use)', content: '' };
+    setFormData({ ...formData, customSections: [...(formData.customSections || []), newSection] });
+  };
+
   const addDiagram = () => {
     const newDiag: TopicDiagram = {
       id: `diag-${Date.now()}`,
@@ -201,6 +206,56 @@ export default function TopicEditor() {
             <div className="bg-[#09090b]">
               <EditorContent editor={editor} />
             </div>
+          </div>
+        </section>
+
+        {/* 2.5 CUSTOM BLOCKS (THEORY / REAL WORLD USE) */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[var(--accent-bg)] flex items-center justify-center text-[var(--accent)]">
+                <Layers className="w-4 h-4" />
+              </div>
+              <h2 className="text-[16px] font-bold tracking-tight">Custom Sections (Theory, Real-world use, etc.)</h2>
+            </div>
+            <button onClick={addCustomSection} className="btn-secondary py-1.5 px-4 text-[12px] flex items-center gap-1.5">
+              <Plus className="w-3.5 h-3.5" /> Add Section
+            </button>
+          </div>
+          
+          <div className="space-y-4">
+            {(formData.customSections || []).length === 0 && (
+               <div className="text-center py-6 border border-dashed border-[var(--border)] rounded-[var(--r-xl)] text-[var(--text-muted)] text-[13px]">
+                 No custom sections. Add one to expand the learning material!
+               </div>
+            )}
+            {(formData.customSections || []).map((section, i) => (
+              <div key={section.id} className="bg-[var(--bg-overlay)] border border-[var(--border)] p-5 rounded-[var(--r-xl)] flex flex-col gap-3">
+                <div className="flex justify-between items-center">
+                  <input 
+                    className="font-bold text-[15px] bg-transparent border-none outline-none text-[var(--text-primary)] w-full"
+                    placeholder="Section Title (e.g. Real World Use)"
+                    value={section.title}
+                    onChange={(e) => {
+                       const arr = [...(formData.customSections || [])];
+                       arr[i].title = e.target.value;
+                       setFormData({...formData, customSections: arr});
+                    }}
+                  />
+                  <button onClick={() => setFormData({...formData, customSections: formData.customSections!.filter(s => s.id !== section.id)})} className="text-red-400 hover:text-red-300 p-1 bg-transparent hover:bg-black/10 rounded"><Trash2 className="w-4 h-4" /></button>
+                </div>
+                <textarea 
+                  className="input-field min-h-[140px]"
+                  placeholder="Write content here. Basic HTML is supported..."
+                  value={section.content}
+                  onChange={(e) => {
+                     const arr = [...(formData.customSections || [])];
+                     arr[i].content = e.target.value;
+                     setFormData({...formData, customSections: arr});
+                  }}
+                />
+              </div>
+            ))}
           </div>
         </section>
 

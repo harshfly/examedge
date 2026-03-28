@@ -74,7 +74,7 @@ export default function StudyPage({ params }: { params: Promise<{ subjectId: str
             >
               <X className="w-5 h-5" />
             </button>
-            <TableOfContents />
+            <TableOfContents subject={subject} currentTopicId={topic.id} />
           </div>
         </div>
 

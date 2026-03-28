@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { DM_Sans, JetBrains_Mono, Syne } from 'next/font/google';
 import './globals.css';
 import AnimatedBackground from '@/components/layout/AnimatedBackground';
+import { Toaster } from 'sonner';
 
 const syne = Syne({
   subsets: ['latin'],
@@ -35,6 +36,7 @@ export default function RootLayout({
       >
         <AnimatedBackground />
         {children}
+        <Toaster richColors position="top-center" />
       </body>
     </html>
   );

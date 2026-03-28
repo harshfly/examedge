@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Subject, TopicContent, QuizQuestion, Flashcard, TopicImage } from '@/types';
-import { subjects as defaultSubjects } from '@/data/subjects';
+import { Subject, TopicContent, QuizQuestion, Flashcard, TopicImage, CurriculumYear } from '@/types';
+import { subjects as defaultSubjects, curriculum as defaultCurriculum } from '@/data/subjects';
 import { cdTopics } from '@/data/content/compiler-design';
 
 interface DataState {
@@ -10,6 +10,15 @@ interface DataState {
   quizzes: QuizQuestion[];
   flashcards: Flashcard[];
   images: TopicImage[];
+  
+  // Curriculum
+  curriculum: CurriculumYear[];
+  updateSemesterStatus: (sem: number, status: 'live'|'coming-soon'|'locked') => void;
+
+  // Semester selection
+  selectedYear: number;
+  selectedSem: number;
+  setSelectedSemester: (year: number, sem: number) => void;
   
   // Subjects
   addSubject: (subject: Subject) => void;
@@ -39,6 +48,20 @@ export const useDataStore = create<DataState>()(
       quizzes: [],
       flashcards: [],
       images: [],
+      curriculum: defaultCurriculum,
+
+      updateSemesterStatus: (sem, status) => set((state) => ({
+        curriculum: state.curriculum.map(y => ({
+          ...y,
+          status: y.semesters.some(s => s.sem === sem ? status === 'live' : s.status === 'live') ? 'live' : y.status,
+          semesters: y.semesters.map(s => s.sem === sem ? { ...s, status } : s)
+        }))
+      })),
+
+      // Default to Year 3, Semester 6
+      selectedYear: 3,
+      selectedSem: 6,
+      setSelectedSemester: (year, sem) => set({ selectedYear: year, selectedSem: sem }),
       
       addSubject: (subject) => set((state) => ({
         subjects: [...state.subjects, subject]
