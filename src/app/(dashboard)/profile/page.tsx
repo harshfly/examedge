@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 export default function ProfilePage() {
   const router = useRouter();
   const user = useAppStore(state => state.user);
+  const isAuthHydrated = useAppStore(state => state.isAuthHydrated);
   const logout = useAppStore(state => state.logout);
   const topics = useDataStore(state => state.topics);
   const [email, setEmail] = useState('');
@@ -24,16 +25,17 @@ export default function ProfilePage() {
   const completedTopicsCount = Object.values(topics).filter(t => t.isCompleted).length;
 
   useEffect(() => {
-    if (!user) {
+    // Only redirect if hydration is complete and user is still null
+    if (isAuthHydrated && !user) {
       router.push('/login');
-    } else {
+    } else if (user) {
       // Fetch actual email from Supabase to display
       const supabase = createClient();
       supabase.auth.getUser().then(({ data }) => {
         if (data?.user) setEmail(data.user.email || 'student@sviit.edu.in');
       });
     }
-  }, [user, router]);
+  }, [user, router, isAuthHydrated]);
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
