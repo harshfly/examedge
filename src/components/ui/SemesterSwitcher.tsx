@@ -32,7 +32,7 @@ export default function SemesterSwitcher() {
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-[calc(100vw-32px)] max-w-[340px] bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[var(--r-xl)] shadow-[var(--shadow-xl)] p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-[calc(100vw-32px)] max-w-[340px] bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[var(--r-xl)] shadow-[var(--shadow-xl)] p-4 z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="text-[10px] font-bold text-[var(--text-muted)] tracking-[0.2em] uppercase mb-3 px-1">Select Semester</div>
           
           <div className="space-y-2">

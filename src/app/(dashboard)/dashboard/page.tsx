@@ -69,7 +69,7 @@ export default function DashboardPage() {
           <p className="text-[12px] md:text-[14px] text-[var(--text-secondary)]">{subjectCount} subjects · {totalUnits} units</p>
 
           {/* Semester Switcher - Smaller for mobile */}
-          <div className="flex justify-center mt-3 md:mt-6 scale-90 md:scale-100">
+          <div className="flex justify-center mt-3 md:mt-6 scale-90 md:scale-100 relative z-30">
             <SemesterSwitcher />
           </div>
         </div>
