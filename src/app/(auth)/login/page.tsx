@@ -80,10 +80,14 @@ export default function LoginPage() {
           // if diffDays === 0, it's the same day, streak stays same
         }
 
-        // Update profile in Supabase to persist the streak
-        await supabase.from('profiles').update({ 
+        // Update profile in Supabase to persist the streak (using upsert for robustness)
+        await supabase.from('profiles').upsert({ 
+          id: data.user!.id,
           streak: nextStreak, 
-          last_active_at: now.toISOString() 
+          last_active_at: now.toISOString(),
+          full_name: meta.full_name,
+          year: meta.year || 3,
+          semester: meta.semester || 6
         }).eq('id', data.user!.id);
 
         login({ 

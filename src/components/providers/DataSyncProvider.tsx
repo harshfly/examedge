@@ -12,21 +12,43 @@ export default function DataSyncProvider({ children }: { children: React.ReactNo
 
   useEffect(() => {
     const syncSession = async () => {
-      // 1. If we have no local user, check Supabase session
+      // 1. Initial global data fetch
+      fetchInitialData();
+
+      // 2. Sync user session if not already in store
       if (!user) {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
         if (session?.user) {
-          // 2. Fetch profile to get role and streak
-          const { data: profile } = await supabase
+          // 3. Robust Profile Fetch or Fallback Create
+          let { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', session.user.id)
             .single();
 
+          // If profile is missing but user is authenticated, create a default one
+          if (!profile || profileError) {
+            const { data: createdProfile } = await supabase
+              .from('profiles')
+              .upsert({
+                id: session.user.id,
+                full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+                role: session.user.user_metadata?.role || 'student',
+                year: session.user.user_metadata?.year || 3,
+                semester: session.user.user_metadata?.semester || 6,
+                streak: 1,
+                last_active_at: new Date().toISOString()
+              })
+              .select()
+              .single();
+            profile = createdProfile;
+          }
+
           if (profile) {
             login({
               id: session.user.id,
-              name: profile.full_name || session.user.email?.split('@')[0] || 'User',
+              name: profile.full_name,
               role: profile.role as 'student' | 'admin',
               selectedYear: profile.year,
               selectedSem: profile.semester,
@@ -36,9 +58,6 @@ export default function DataSyncProvider({ children }: { children: React.ReactNo
           }
         }
       }
-
-      // 3. Fetch global app data (subjects, topics, etc.)
-      fetchInitialData();
     };
 
     syncSession();
