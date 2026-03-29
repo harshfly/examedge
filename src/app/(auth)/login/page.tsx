@@ -44,9 +44,11 @@ export default function LoginPage() {
           id: data.user!.id,
           name: fullName || email.split('@')[0], 
           role: 'student', 
-          selectedYear: parseInt(year) || 3, 
-          selectedSem: parseInt(semester) || 6,
+          selectedYear: Number(year) || 3, 
+          selectedSem: Number(semester) || 6,
           streak: 1,
+          xp: 0,
+          level: 1,
           lastActiveAt: new Date().toISOString()
         });
 
@@ -86,17 +88,19 @@ export default function LoginPage() {
           streak: nextStreak, 
           last_active_at: now.toISOString(),
           full_name: meta.full_name,
-          year: meta.year || 3,
-          semester: meta.semester || 6
-        }).eq('id', data.user!.id);
+          year: Number(meta.year) || 3,
+          semester: Number(meta.semester) || 6
+        });
 
         login({ 
           id: data.user!.id,
           name: meta.full_name || email.split('@')[0], 
           role: 'student', 
-          selectedYear: meta.year || 3, 
-          selectedSem: meta.semester || 6,
+          selectedYear: Number(meta.year) || 3, 
+          selectedSem: Number(meta.semester) || 6,
           streak: nextStreak,
+          xp: meta.xp || 0,
+          level: meta.level || 1,
           lastActiveAt: now.toISOString()
         });
         

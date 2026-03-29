@@ -8,6 +8,8 @@ interface User {
   selectedYear: number | null;
   selectedSem: number | null;
   streak: number;
+  xp: number;
+  level: number;
   lastActiveAt: string;
 }
 

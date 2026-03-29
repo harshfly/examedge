@@ -40,9 +40,11 @@ export default function DataSyncProvider({ children }: { children: React.ReactNo
                 id: authUser.id,
                 full_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'User',
                 role: authUser.user_metadata?.role || 'student',
-                year: authUser.user_metadata?.year || 3,
-                semester: authUser.user_metadata?.semester || 6,
+                year: Number(authUser.user_metadata?.year) || 3,
+                semester: Number(authUser.user_metadata?.semester) || 6,
                 streak: 1,
+                xp: 0,
+                level: 1,
                 last_active_at: new Date().toISOString()
               })
               .select()
@@ -62,6 +64,8 @@ export default function DataSyncProvider({ children }: { children: React.ReactNo
               selectedYear: profile.year,
               selectedSem: profile.semester,
               streak: profile.streak || 1,
+              xp: profile.xp || 0,
+              level: profile.level || 1,
               lastActiveAt: profile.last_active_at
             });
           }

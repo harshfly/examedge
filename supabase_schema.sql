@@ -73,9 +73,22 @@ CREATE TABLE IF NOT EXISTS profiles (
     year INTEGER DEFAULT 3,
     semester INTEGER DEFAULT 6,
     streak INTEGER DEFAULT 1,
+    xp INTEGER DEFAULT 0,
+    level INTEGER DEFAULT 1,
     last_active_at TIMESTAMPTZ DEFAULT NOW(),
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 11. User Progress Tracking (Individual completions)
+CREATE TABLE IF NOT EXISTS user_progress (
+  id BIGSERIAL PRIMARY KEY,
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  subject_id TEXT NOT NULL,
+  topic_id TEXT NOT NULL,
+  completed BOOLEAN DEFAULT TRUE,
+  completed_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, subject_id, topic_id)
 );
 
 -- Enable RLS
@@ -139,6 +152,15 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- User Progress Policies
+ALTER TABLE user_progress ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can read own progress" ON user_progress;
+CREATE POLICY "Users can read own progress" ON user_progress FOR SELECT USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can update own progress" ON user_progress;
+CREATE POLICY "Users can update own progress" ON user_progress FOR ALL USING (auth.uid() = user_id);
+
 DROP POLICY IF EXISTS "Admin can read all profiles" ON profiles;
 CREATE POLICY "Admin can read all profiles" ON profiles FOR SELECT USING (check_is_admin());
 
@@ -177,10 +199,10 @@ BEGIN
   INSERT INTO public.profiles (id, full_name, role, year, semester)
   VALUES (
     NEW.id,
-    NEW.raw_user_meta_data->>'full_name',
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.email),
     COALESCE(NEW.raw_user_meta_data->>'role', 'student'),
-    (NEW.raw_user_meta_data->>'year')::integer,
-    (NEW.raw_user_meta_data->>'semester')::integer
+    COALESCE((NEW.raw_user_meta_data->>'year')::integer, 3),
+    COALESCE((NEW.raw_user_meta_data->>'semester')::integer, 6)
   );
   RETURN NEW;
 END;
@@ -193,12 +215,14 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- Backfill profiles for existing users
-INSERT INTO public.profiles (id, full_name, role, year, semester)
+INSERT INTO public.profiles (id, full_name, role, year, semester, xp, level)
 SELECT 
   id, 
-  raw_user_meta_data->>'full_name', 
+  COALESCE(raw_user_meta_data->>'full_name', email), 
   COALESCE(raw_user_meta_data->>'role', 'student'),
-  (raw_user_meta_data->>'year')::integer,
-  (raw_user_meta_data->>'semester')::integer
+  COALESCE((raw_user_meta_data->>'year')::integer, 3),
+  COALESCE((raw_user_meta_data->>'semester')::integer, 6),
+  0,
+  1
 FROM auth.users
 ON CONFLICT (id) DO NOTHING;
