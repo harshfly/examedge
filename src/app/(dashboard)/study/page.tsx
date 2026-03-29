@@ -2,22 +2,19 @@
 
 import { useDataStore } from "@/store/useDataStore";
 import { useAppStore } from "@/store/useAppStore";
+import { useSemesterContext } from "@/hooks/useSemesterContext";
 import { FolderOpen, ArrowRight, Lock } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { Subject, Unit } from "@/types";
 
 export default function StudyIndexPage() {
   const { subjects } = useDataStore();
-  const { user } = useAppStore();
+  const { semesterSubjects, selectedSem } = useSemesterContext();
   const [filter, setFilter] = useState<'all' | 'my-sem'>('my-sem');
 
   // If filter is 'my-sem', only show subjects matching the user's selected context.
-  // For safety, providing a fallback allowing seeing all if no sem selected.
-  const displaySubjects = subjects.filter(sub => {
-    if (filter === 'all') return true;
-    if (user?.selectedSem) return sub.semester === user.selectedSem;
-    return true; // fallback
-  });
+  const displaySubjects = filter === 'all' ? subjects : semesterSubjects;
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -29,7 +26,7 @@ export default function StudyIndexPage() {
             <div>
               <h1 className="h1 mb-2">Subject Library</h1>
               <p className="body-lg text-[var(--text-secondary)]">
-                {user?.selectedSem ? `Target Curriculum for Semester ${user.selectedSem}` : 'Browse all available interactive subjects.'}
+                {selectedSem ? `Target Curriculum for Semester ${selectedSem}` : 'Browse all available interactive subjects.'}
               </p>
             </div>
             
@@ -56,7 +53,7 @@ export default function StudyIndexPage() {
               </div>
             )}
             
-            {displaySubjects.map(sub => {
+            {displaySubjects.map((sub: Subject) => {
               // Forced unlock for testing demonstration
               const isLocked = false;
 
@@ -87,7 +84,7 @@ export default function StudyIndexPage() {
                     
                     {!isLocked ? (
                       <Link 
-                        href={`/study/${sub.id}/${sub.units.find(u => u.topics.length > 0)?.topics[0]?.id || 'cd-1-1'}`}
+                        href={`/study/${sub.id}/${sub.units.find((u: Unit) => u.topics.length > 0)?.topics[0]?.id || 'cd-1-1'}`}
                         className="btn-icon w-7 h-7 md:w-8 md:h-8 rounded-full bg-[var(--accent)] text-white hover:scale-110 transition-transform flex items-center justify-center"
                       >
                         <ArrowRight className="w-3.5 md:w-4 h-3.5 md:h-4" />
