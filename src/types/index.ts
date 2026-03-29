@@ -9,6 +9,7 @@ export interface CurriculumYear {
 }
 export interface CurriculumSem {
   sem: 1|2|3|4|5|6|7|8;
+  label?: string;         // Optional custom label (e.g. "Spring 2024")
   status: 'live'|'coming-soon'|'locked';
   subjectIds: string[];
   enabledAt?: string;     // ISO date when admin unlocked it
@@ -140,6 +141,7 @@ export interface ExamTip {
 // Quiz
 export interface QuizQuestion {
   id: string;
+  year: number; semester: number;
   subjectId: string; unitNo: string; topicId: string;
   difficulty: 'easy'|'medium'|'hard';
   question: string;
@@ -155,6 +157,7 @@ export interface QuizQuestion {
 // Flashcard
 export interface Flashcard {
   id: string;
+  year: number; semester: number;
   subjectId: string; unitNo: string; topicId: string;
   front: string;
   back: string;

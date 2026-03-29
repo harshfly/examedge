@@ -13,7 +13,11 @@ import { Quote, FileText, ExternalLink, Sparkles } from "lucide-react";
 import { useDataStore } from "@/store/useDataStore";
 
 export default function DashboardPage() {
-  const { selectedYear, selectedSem, semesterSubjects, isLive, semRoman, subjectCount, totalUnits, totalCredits } = useSemesterContext();
+  const { 
+    selectedYear, selectedSem, semesterSubjects, 
+    isLive, semRoman, subjectCount, 
+    totalUnits, totalCredits, quizCount, flashcardCount 
+  } = useSemesterContext();
   const user = useAppStore(state => state.user);
   const { quotes, syllabi } = useDataStore();
   
@@ -86,10 +90,10 @@ export default function DashboardPage() {
             <div className="grid grid-cols-3 md:grid-cols-5 gap-2 mb-6 md:mb-9">
               {[
                 { num: `${subjectCount}`, label: '📚 Subjects', color: 'var(--accent)', trend: '↑ Complete' },
-                { num: '47%', label: '✅ Progress', color: '#10b981', trend: '↑ 8%' },
-                { num: '200+', label: '❓ Questions', color: 'var(--color-cloud)', trend: '↑ 20' },
-                { num: '72%', label: '🎯 Quiz Avg', color: '#38bdf8', trend: '↑ 2%' },
-                { num: '2', label: '⚠️ Weak', color: 'var(--error)', trend: '↓ 1' },
+                { num: '0%', label: '✅ Progress', color: '#10b981', trend: '↑ 0%' },
+                { num: `${quizCount}`, label: '❓ Questions', color: 'var(--color-cloud)', trend: 'Bank Ready' },
+                { num: '0%', label: '🎯 Quiz Avg', color: '#38bdf8', trend: 'No Attempts' },
+                { num: `${flashcardCount}`, label: '🧠 Recall', color: 'var(--color-iot)', trend: 'Neural Ready' },
               ].map((stat, i) => (
                 <div key={i} className={`bg-[var(--bg-overlay)] border border-[var(--border)] rounded-[var(--r-lg)] p-2 md:p-5 transition-transform hover:-translate-y-1 hover:border-[var(--border-hover)] ${i > 2 ? 'hidden md:block' : ''}`}>
                   <div className="font-['Syne'] font-extrabold text-[18px] md:text-[32px] leading-none mb-1 text-center md:text-left" style={{ color: stat.color }}>{stat.num}</div>
@@ -173,8 +177,8 @@ export default function DashboardPage() {
             {/* Quick Actions Grid */}
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-10">
               {[
-                { icon: <HelpCircle className="w-4 h-4 md:w-6 md:h-6 text-[var(--accent)]" />, title: 'Take a Quiz', desc: 'Test your knowledge with 200+ questions', color: 'var(--accent)', href: '/quiz' },
-                { icon: <Layers className="w-4 h-4 md:w-6 md:h-6 text-[var(--color-iot)]" />, title: 'Flashcards', desc: 'Active recall spaced repetition', color: 'var(--color-iot)', href: '/flashcards' },
+                { icon: <HelpCircle className="w-4 h-4 md:w-6 md:h-6 text-[var(--accent)]" />, title: 'Take a Quiz', desc: `Test your knowledge with ${quizCount} questions`, color: 'var(--accent)', href: '/quiz' },
+                { icon: <Layers className="w-4 h-4 md:w-6 md:h-6 text-[var(--color-iot)]" />, title: 'Neural Recall', desc: `Active recall with ${flashcardCount} cards`, color: 'var(--color-iot)', href: '/flashcards' },
                 { icon: <BookOpen className="w-4 h-4 md:w-6 md:h-6 text-[var(--color-ds)]" />, title: 'View Progress', desc: 'Detailed analytics and weak spotting', color: 'var(--color-ds)', href: '/progress' },
                 { icon: <Calendar className="w-4 h-4 md:w-6 md:h-6 text-[var(--color-cd)]" />, title: 'Revision Plan', desc: 'Smart AI scheduling for exams', color: 'var(--color-cd)', href: '/planner' },
               ].map((action, i) => (

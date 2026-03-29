@@ -12,35 +12,32 @@ import LandingStats from '@/components/layout/LandingStats';
 
 export default function LandingPage() {
   const router = useRouter();
-  const { subjects, heroAnnouncement } = useDataStore();
+  const { curriculum, heroAnnouncement } = useDataStore();
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedSem, setSelectedSem] = useState<number | null>(null);
 
-  const years = [
-    { id: 1, label: 'First Year', sems: 'Sem I & II', status: 'Coming Soon', color: '#22c55e' },
-    { id: 2, label: 'Second Year', sems: 'Sem III & IV', status: 'Coming Soon', color: '#38bdf8' },
-    { id: 3, label: 'Third Year', sems: 'Sem V & VI', status: 'Available', color: '#6c63ff', isLive: true },
-    { id: 4, label: 'Fourth Year', sems: 'Sem VII & VIII', status: 'Coming Soon', color: '#f97316' }
-  ];
+  const years = curriculum.map(y => {
+    // Fail-safe: check for 'live', legacy 'Available', or any live semester
+    const isYearLive = (y.status as any) === 'live' || (y.status as any) === 'Available' || y.semesters.some(s => s.status === 'live');
+    return {
+      id: y.year,
+      label: y.label,
+      sems: y.year === 1 ? 'Sem I & II' : y.year === 2 ? 'Sem III & IV' : y.year === 3 ? 'Sem V & VI' : 'Sem VII & VIII',
+      status: isYearLive ? 'Available' : 'Coming Soon',
+      color: y.color,
+      isLive: isYearLive
+    };
+  });
 
-  const semsByYear: Record<number, { id: number, label: string, status: string, isLive?: boolean }[]> = {
-    1: [
-      { id: 1, label: 'Semester 1', status: 'Soon' },
-      { id: 2, label: 'Semester 2', status: 'Soon' }
-    ],
-    2: [
-      { id: 3, label: 'Semester 3', status: 'Soon' },
-      { id: 4, label: 'Semester 4', status: 'Soon' }
-    ],
-    3: [
-      { id: 5, label: 'Semester 5', status: 'Soon' },
-      { id: 6, label: 'Semester 6', status: 'Live ✓', isLive: true }
-    ],
-    4: [
-      { id: 7, label: 'Semester 7', status: 'Soon' },
-      { id: 8, label: 'Semester 8', status: 'Soon' }
-    ]
-  };
+  const semsByYear = curriculum.reduce((acc, y) => {
+    acc[y.year] = y.semesters.map(s => ({
+      id: s.sem,
+      label: s.label || `Semester ${s.sem}`,
+      status: s.status === 'live' ? 'Live ✓' : s.status === 'coming-soon' ? 'Soon' : 'Locked',
+      isLive: s.status === 'live'
+    }));
+    return acc;
+  }, {} as Record<number, any[]>);
 
   const currentSems = selectedYear ? semsByYear[selectedYear] : [];
 
@@ -145,7 +142,13 @@ export default function LandingPage() {
         {/* PROCEED BUTTON */}
         <button 
           disabled={!selectedYear || !selectedSem}
-          onClick={() => router.push('/dashboard')}
+          onClick={() => {
+            if (selectedYear && selectedSem) {
+              const { setSelectedSemester } = useDataStore.getState();
+              setSelectedSemester(selectedYear, selectedSem);
+              router.push('/dashboard');
+            }
+          }}
           className={`min-w-[280px] py-4 rounded-xl font-['Syne'] text-[15px] font-bold tracking-tight transition-all duration-300
             ${selectedYear && selectedSem 
               ? 'btn-primary shadow-[0_8px_32px_rgba(108,99,255,0.4)] hover:scale-[1.02]' 

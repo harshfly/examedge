@@ -25,9 +25,6 @@ export default function LandingNavbar() {
           <Link href={mounted && user ? "/dashboard" : "/login"} className="btn-ghost flex items-center justify-center">
             {mounted && user ? "Dashboard →" : "Login →"}
           </Link>
-          <button className="btn-icon">
-            <Moon className="w-4 h-4 text-[#a0a0c0]" />
-          </button>
         </div>
       </div>
     </nav>

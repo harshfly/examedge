@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Subject, TopicContent, QuizQuestion, Flashcard, TopicImage, CurriculumYear, MotivationQuote, SyllabusLink, DiagramAsset } from '@/types';
+import { Subject, TopicContent, QuizQuestion, Flashcard, TopicImage, CurriculumYear, CurriculumSem, MotivationQuote, SyllabusLink, DiagramAsset } from '@/types';
 import { subjects as defaultSubjects, curriculum as defaultCurriculum } from '@/data/subjects';
 import { cdTopics } from '@/data/content/compiler-design';
 import { supabase } from '@/lib/supabase/client';
@@ -22,7 +22,8 @@ interface DataState {
 
   // Curriculum
   curriculum: CurriculumYear[];
-  updateSemesterStatus: (sem: number, status: 'live' | 'coming-soon' | 'locked') => void;
+  updateSemesterInfo: (sem: number, updates: Partial<CurriculumSem>) => void;
+  updateYearInfo: (year: number, updates: Partial<CurriculumYear>) => void;
 
   // Hero Announcement
   heroAnnouncement: string;
@@ -121,9 +122,9 @@ export const useDataStore = create<DataState>()(
             updates.topics = topicsMap;
           }
 
-          if (quizzes && quizzes.length > 0) updates.quizzes = quizzes.map((q: any) => q.data);
-          if (flashcards && flashcards.length > 0) updates.flashcards = flashcards.map((f: any) => f.data);
-          if (diagrams && diagrams.length > 0) updates.diagrams = diagrams.map((d: any) => d.data);
+          if (quizzes && quizzes.length > 0) updates.quizzes = quizzes.map((q: any) => ({ ...q.data, year: q.year, semester: q.semester, subjectId: q.subject_id }));
+          if (flashcards && flashcards.length > 0) updates.flashcards = flashcards.map((f: any) => ({ ...f.data, year: f.year, semester: f.semester, subjectId: f.subject_id }));
+          if (diagrams && diagrams.length > 0) updates.diagrams = diagrams.map((d: any) => ({ ...d.data, year: d.year, semester: d.semester }));
           if (quotes && quotes.length > 0) updates.quotes = quotes.map((q: any) => q.data);
           if (syllabi && syllabi.length > 0) updates.syllabi = syllabi.map((s: any) => s.data);
           if (images && images.length > 0) updates.images = images.map((i: any) => i.data);
@@ -166,19 +167,66 @@ export const useDataStore = create<DataState>()(
         }
       },
 
-      updateSemesterStatus: (sem, status) => set((state) => {
-        const newCurriculum = state.curriculum.map(y => ({
-          ...y,
-          status: y.semesters.some(s => s.sem === sem ? status === 'live' : s.status === 'live') ? 'live' : y.status,
-          semesters: y.semesters.map(s => s.sem === sem ? { ...s, status } : s)
-        }));
-        supabase.from('examedge_settings').upsert({ key: 'curriculum', value: newCurriculum }).then();
+      updateSemesterInfo: (sem, updates) => set((state) => {
+        const newCurriculum = state.curriculum.map(y => {
+          if (!y.semesters.some(s => s.sem === sem)) return y;
+          const updatedSemesters = y.semesters.map(s => s.sem === sem ? { ...s, ...updates } : s);
+          // If any semester is live, year is live
+          const yearStatus: 'live' | 'coming-soon' = updatedSemesters.some(s => s.status === 'live') ? 'live' : 'coming-soon';
+          return { ...y, semesters: updatedSemesters, status: yearStatus };
+        });
+        
+        toast.promise(
+          (async () => {
+            const { error } = await supabase.from('examedge_settings').upsert({ key: 'curriculum', value: newCurriculum });
+            if (error) throw error;
+          })(),
+          {
+            loading: 'Updating curriculum...',
+            success: 'Semester information updated!',
+            error: 'Failed to sync curriculum changes'
+          }
+        );
+
+        return { curriculum: newCurriculum };
+      }),
+
+      updateYearInfo: (year, updates) => set((state) => {
+        const newCurriculum = state.curriculum.map(y => y.year === year ? { ...y, ...updates } : y);
+        
+        toast.promise(
+          (async () => {
+            const { error } = await supabase.from('examedge_settings').upsert({ key: 'curriculum', value: newCurriculum });
+            if (error) throw error;
+          })(),
+          {
+            loading: 'Saving year info...',
+            success: `Year 0${year} updated successfully.`,
+            error: 'Failed to save year info.'
+          }
+        );
+        
         return { curriculum: newCurriculum };
       }),
 
       addSubject: (subject) => set((state) => {
         const newSubjects = [...state.subjects, subject];
-        supabase.from('examedge_subjects').upsert({ id: subject.id, data: subject }).then();
+        toast.promise(
+          (async () => {
+            const { error } = await supabase.from('examedge_subjects').upsert({ 
+              id: subject.id, 
+              year: subject.year,
+              semester: subject.semester,
+              data: subject 
+            });
+            if (error) throw error;
+          })(),
+          {
+            loading: 'Initializing subject core...',
+            success: `${subject.name} added to curriculum.`,
+            error: 'Database sync failed.'
+          }
+        );
         return { subjects: newSubjects };
       }),
 
@@ -186,13 +234,39 @@ export const useDataStore = create<DataState>()(
         const newSubjects = state.subjects.map(s => s.id === id ? { ...s, ...updates } : s);
         const updatedSubject = newSubjects.find(s => s.id === id);
         if (updatedSubject) {
-          supabase.from('examedge_subjects').upsert({ id, data: updatedSubject }).then();
+          toast.promise(
+            (async () => {
+              const { error } = await supabase.from('examedge_subjects').upsert({ 
+                id, 
+                year: updatedSubject.year,
+                semester: updatedSubject.semester,
+                data: updatedSubject 
+              });
+              if (error) throw error;
+            })(),
+            {
+              loading: 'Updating academic node...',
+              success: 'Subject changes persisted.',
+              error: 'Failed to sync subject.'
+            }
+          );
         }
         return { subjects: newSubjects };
       }),
 
       deleteSubject: (id) => set((state) => {
-        supabase.from('examedge_subjects').delete().eq('id', id).then();
+        const sub = state.subjects.find(s => s.id === id);
+        toast.promise(
+          (async () => {
+            const { error } = await supabase.from('examedge_subjects').delete().eq('id', id);
+            if (error) throw error;
+          })(),
+          {
+            loading: 'Purging from database...',
+            success: `${sub?.name || 'Subject'} removed.`,
+            error: 'Failed to delete.'
+          }
+        );
         return { subjects: state.subjects.filter(s => s.id !== id) };
       }),
 
@@ -209,14 +283,38 @@ export const useDataStore = create<DataState>()(
       }),
 
       saveQuiz: (quiz) => set((state) => {
-        supabase.from('examedge_quizzes').upsert({ id: quiz.id, data: quiz }).then();
+        const year = quiz.year || state.selectedYear;
+        const semester = quiz.semester || state.selectedSem;
+        const quizWithContext = { ...quiz, year, semester };
+
+        toast.promise(
+          (async () => {
+            const { error } = await supabase.from('examedge_quizzes').upsert({ 
+              id: quiz.id, 
+              year, 
+              semester, 
+              subject_id: quiz.subjectId,
+              data: quizWithContext 
+            });
+            if (error) {
+              console.error('Quiz Sync Error:', error);
+              throw error;
+            }
+          })(),
+          {
+            loading: 'Syncing assessment...',
+            success: 'Quiz question saved.',
+            error: (err: any) => `Sync Error: ${err.message || 'Failed to sync quiz.'}`
+          }
+        );
+
         const index = state.quizzes.findIndex(q => q.id === quiz.id);
         if (index >= 0) {
           const newQuizzes = [...state.quizzes];
-          newQuizzes[index] = quiz;
+          newQuizzes[index] = quizWithContext;
           return { quizzes: newQuizzes };
         }
-        return { quizzes: [...state.quizzes, quiz] };
+        return { quizzes: [...state.quizzes, quizWithContext] };
       }),
 
       deleteQuiz: (id) => set((state) => {
@@ -225,14 +323,38 @@ export const useDataStore = create<DataState>()(
       }),
 
       saveFlashcard: (card) => set((state) => {
-        supabase.from('examedge_flashcards').upsert({ id: card.id, data: card }).then();
+        const year = card.year || state.selectedYear;
+        const semester = card.semester || state.selectedSem;
+        const cardWithContext = { ...card, year, semester };
+
+        toast.promise(
+          (async () => {
+            const { error } = await supabase.from('examedge_flashcards').upsert({ 
+              id: card.id, 
+              year, 
+              semester, 
+              subject_id: card.subjectId,
+              data: cardWithContext 
+            });
+            if (error) {
+              console.error('Flashcard Sync Error:', error);
+              throw error;
+            }
+          })(),
+          {
+            loading: 'Persisting neural recall...',
+            success: 'Flashcard synced.',
+            error: (err: any) => `Sync Error: ${err.message || 'Failed to sync flashcard.'}`
+          }
+        );
+
         const index = state.flashcards.findIndex(f => f.id === card.id);
         if (index >= 0) {
           const newCards = [...state.flashcards];
-          newCards[index] = card;
+          newCards[index] = cardWithContext;
           return { flashcards: newCards };
         }
-        return { flashcards: [...state.flashcards, card] };
+        return { flashcards: [...state.flashcards, cardWithContext] };
       }),
 
       deleteFlashcard: (id) => set((state) => {
@@ -257,14 +379,34 @@ export const useDataStore = create<DataState>()(
       }),
 
       saveDiagram: (diagram) => set((state) => {
-        supabase.from('examedge_diagrams').upsert({ id: diagram.id, data: diagram }).then();
+        const year = state.selectedYear;
+        const semester = state.selectedSem;
+        const diagramWithContext = { ...diagram, year, semester };
+
+        toast.promise(
+          (async () => {
+            const { error } = await supabase.from('examedge_diagrams').upsert({ 
+              id: diagram.id, 
+              year, 
+              semester, 
+              data: diagramWithContext 
+            });
+            if (error) throw error;
+          })(),
+          {
+            loading: 'Uploading diagram...',
+            success: 'Diagram persisted.',
+            error: 'Failed to sync diagram.'
+          }
+        );
+
         const index = state.diagrams.findIndex(d => d.id === diagram.id);
         if (index >= 0) {
           const newDiagrams = [...state.diagrams];
-          newDiagrams[index] = diagram;
+          newDiagrams[index] = diagramWithContext;
           return { diagrams: newDiagrams };
         }
-        return { diagrams: [...state.diagrams, diagram] };
+        return { diagrams: [...state.diagrams, diagramWithContext] };
       }),
 
       deleteDiagram: (id) => set((state) => {
@@ -317,7 +459,17 @@ export const useDataStore = create<DataState>()(
         return { examDates: newDates };
       }),
       setHeroAnnouncement: (text) => set((state) => {
-        supabase.from('examedge_settings').upsert({ key: 'hero_announcement', value: { text } }).then();
+        toast.promise(
+          (async () => {
+            const { error } = await supabase.from('examedge_settings').upsert({ key: 'hero_announcement', value: { text } });
+            if (error) throw error;
+          })(),
+          {
+            loading: 'Pushing landing page update...',
+            success: 'Announcement broadcasted live.',
+            error: 'Broadcast failed.'
+          }
+        );
         return { heroAnnouncement: text };
       }),
     }),

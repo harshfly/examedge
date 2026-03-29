@@ -1,13 +1,11 @@
 import { useMemo } from 'react';
 import { useDataStore } from '@/store/useDataStore';
-import { curriculum } from '@/data/subjects';
-
 export function useSemesterContext() {
-  const { subjects, selectedYear, selectedSem, setSelectedSemester } = useDataStore();
+  const { subjects, curriculum, selectedYear, selectedSem, setSelectedSemester } = useDataStore();
 
   const currentYearData = useMemo(
     () => curriculum.find(y => y.year === selectedYear),
-    [selectedYear]
+    [curriculum, selectedYear]
   );
 
   const currentSemData = useMemo(
@@ -18,8 +16,24 @@ export function useSemesterContext() {
   const isLive = currentSemData?.status === 'live';
 
   const semesterSubjects = useMemo(
-    () => subjects.filter(s => s.semester === selectedSem),
-    [subjects, selectedSem]
+    () => subjects.filter(s => s.year === selectedYear && s.semester === selectedSem),
+    [subjects, selectedYear, selectedSem]
+  );
+
+  const semesterQuizzes = useMemo(
+    () => {
+      const { quizzes } = useDataStore.getState();
+      return quizzes.filter(q => q.year === selectedYear && q.semester === selectedSem);
+    },
+    [selectedYear, selectedSem]
+  );
+
+  const semesterFlashcards = useMemo(
+    () => {
+      const { flashcards } = useDataStore.getState();
+      return flashcards.filter(f => f.year === selectedYear && f.semester === selectedSem);
+    },
+    [selectedYear, selectedSem]
   );
 
   const totalCredits = useMemo(
@@ -43,9 +57,13 @@ export function useSemesterContext() {
     currentSemData,
     isLive,
     semesterSubjects,
+    semesterQuizzes,
+    semesterFlashcards,
     totalCredits,
     totalUnits,
     semRoman,
     subjectCount: semesterSubjects.length,
+    quizCount: semesterQuizzes.length,
+    flashcardCount: semesterFlashcards.length,
   };
 }
