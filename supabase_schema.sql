@@ -80,6 +80,10 @@ CREATE TABLE IF NOT EXISTS profiles (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Migration safety for existing profiles table
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS xp INTEGER DEFAULT 0;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS level INTEGER DEFAULT 1;
+
 -- 11. User Progress Tracking (Individual completions)
 CREATE TABLE IF NOT EXISTS user_progress (
   id BIGSERIAL PRIMARY KEY,
