@@ -89,10 +89,10 @@ export default function ProfilePage() {
             
             <div className="relative z-10 flex flex-col items-center mt-6">
               <div className="w-24 h-24 rounded-full bg-[var(--bg-elevated)] border-4 border-[var(--bg-base)] flex flex-col items-center justify-center shadow-xl mb-4">
-                <span className="text-[32px] font-['Syne'] font-black text-white">{user.name.charAt(0).toUpperCase()}</span>
+                <span className="text-[32px] font-['Syne'] font-black text-white">{(user.name || email || 'U').charAt(0).toUpperCase()}</span>
               </div>
               
-              <h2 className="text-[20px] font-bold text-white font-['Syne'] tracking-tight">{user.name}</h2>
+              <h2 className="text-[20px] font-bold text-white font-['Syne'] tracking-tight">{user.name || 'Student'}</h2>
               <p className="text-[13px] text-[var(--text-muted)] mt-1">{email}</p>
               
               <div className="flex items-center gap-2 mt-4 text-[12px] font-semibold">

@@ -53,10 +53,11 @@ export default function DataSyncProvider({ children }: { children: React.ReactNo
           }
 
           if (profile) {
-            console.log("DataSyncProvider: Syncing user to store:", profile.full_name);
+            const displayName = profile.full_name || authUser.email?.split('@')[0] || 'Student';
+            console.log("DataSyncProvider: Syncing user to store:", displayName);
             login({
               id: authUser.id,
-              name: profile.full_name,
+              name: displayName,
               role: profile.role as 'student' | 'admin',
               selectedYear: profile.year,
               selectedSem: profile.semester,

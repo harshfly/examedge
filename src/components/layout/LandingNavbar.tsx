@@ -1,7 +1,19 @@
+'use client';
+
 import Link from "next/link";
 import { Moon } from "lucide-react";
+import { useAppStore } from "@/store/useAppStore";
+import { useState, useEffect } from "react";
 
 export default function LandingNavbar() {
+  const user = useAppStore(state => state.user);
+  const [mounted, setMounted] = useState(false);
+  
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <nav className="h-[60px] sticky top-0 z-50 bg-[#09090b]/85 backdrop-blur-xl border-b border-[rgba(255,255,255,0.08)]">
       <div className="max-w-[960px] mx-auto px-6 h-full flex items-center justify-between">
@@ -10,8 +22,8 @@ export default function LandingNavbar() {
           <span className="font-['Syne'] font-extrabold text-[18px] tracking-[-0.03em] text-[#f0f0f8]">ExamEdge</span>
         </Link>
         <div className="flex items-center gap-4">
-          <Link href="/login" className="btn-ghost flex items-center justify-center">
-            Login →
+          <Link href={mounted && user ? "/dashboard" : "/login"} className="btn-ghost flex items-center justify-center">
+            {mounted && user ? "Dashboard →" : "Login →"}
           </Link>
           <button className="btn-icon">
             <Moon className="w-4 h-4 text-[#a0a0c0]" />
