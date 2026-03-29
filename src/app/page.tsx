@@ -48,16 +48,16 @@ export default function LandingPage() {
     <>
       <LandingNavbar />
       <div className="w-full min-h-screen flex flex-col relative overflow-x-hidden">
-        <div className="max-w-[960px] mx-auto px-6 py-12 relative z-10 flex flex-col items-center flex-1 w-full pb-32">
+        <div className="max-w-[960px] mx-auto px-5 py-6 md:py-16 relative z-10 flex flex-col items-center flex-1 w-full pb-32">
         {/* Eyebrow Pill */}
-        <div className="mb-6 px-4 py-1.5 rounded-full border border-[rgba(108,99,255,0.25)] bg-[rgba(108,99,255,0.12)] animate-pulse-slow">
-          <span className="text-[12px] font-semibold text-[#a78bfa] tracking-[0.06em] uppercase">✦ SVIIT B.Tech — Sem 6 Curriculum Live</span>
+        <div className="mb-4 md:mb-8 px-4 py-1 rounded-full border border-[rgba(108,99,255,0.2)] bg-[rgba(108,99,255,0.1)] animate-pulse-slow">
+          <span className="text-[10px] md:text-[12px] font-bold text-[#a78bfa] tracking-[0.05em] uppercase">✦ SVIIT B.Tech — Sem 6 Live</span>
         </div>
 
         {/* Hero Headlines */}
-        <h1 className="h1 text-center mb-0">Your Smart Exam</h1>
-        <h1 className="display text-gradient text-center mb-4 pb-2">Companion</h1>
-        <p className="body-lg text-center text-[var(--text-secondary)] max-w-[480px] mb-7">
+        <h1 className="font-['Syne'] font-extrabold text-[32px] md:text-[64px] leading-tight text-center mb-0">Your Smart Exam</h1>
+        <h1 className="font-['Syne'] font-extrabold text-[44px] md:text-[84px] text-gradient text-center mb-3 md:mb-6 leading-[0.9] pb-1">Companion</h1>
+        <p className="text-[13px] md:text-[18px] text-center text-[var(--text-secondary)] max-w-[480px] mb-5 md:mb-12 px-2">
           Select your year and semester to access personalized study materials, quizzes, flashcards, and progress tracking.
         </p>
 
@@ -65,11 +65,11 @@ export default function LandingPage() {
         <LandingStats />
 
         {/* SECTION 01: YEAR */}
-        <div className="w-full mb-10">
-          <div className="label text-[var(--text-muted)] mb-8 flex justify-center items-center text-center w-full px-[5%] before:content-[''] before:flex-1 before:h-[1px] before:bg-white/[0.08] before:mr-6 after:content-[''] after:flex-1 after:h-[1px] after:bg-white/[0.08] after:ml-6">
+        <div className="w-full mb-8 md:mb-16 mt-2 md:mt-8">
+          <div className="label text-[var(--text-muted)] mb-6 md:mb-10 flex justify-center items-center text-center w-full px-[5%] before:content-[''] before:flex-1 before:h-[1px] before:bg-white/[0.08] before:mr-6 after:content-[''] after:flex-1 after:h-[1px] after:bg-white/[0.08] after:ml-6 text-[11px] uppercase tracking-widest font-bold">
             01 — SELECT YOUR YEAR
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-[14px]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-[14px]">
             {years.map((y, i) => (
               <motion.div 
                 key={y.id}
@@ -84,7 +84,7 @@ export default function LandingPage() {
                     alert('Content for Year ' + y.id + ' is coming soon! 🚀');
                   }
                 }}
-                className={`flex flex-col items-center justify-center p-6 rounded-[22px] border transition-all duration-350 cursor-pointer text-center min-h-[170px] relative overflow-hidden
+                className={`flex flex-col items-center justify-center p-4 md:p-8 rounded-[20px] md:rounded-[22px] border transition-all duration-350 cursor-pointer text-center min-h-[140px] md:min-h-[180px] relative overflow-hidden
                   ${selectedYear === y.id 
                     ? `border-[${y.color}] bg-[${y.color}]/10 shadow-[0_12px_32px_rgba(0,0,0,0.4)]` 
                     : y.isLive ? 'bg-white/[0.03] backdrop-blur-md border-white/[0.08] hover:border-white/[0.2]' : 'bg-white/[0.01] border-white/[0.04] opacity-40'}
@@ -92,10 +92,10 @@ export default function LandingPage() {
                 style={{ borderColor: selectedYear === y.id ? y.color : undefined }}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
-                <span className="font-['Syne'] text-[32px] md:text-[40px] font-extrabold leading-none mb-2" style={{ color: y.color }}>0{y.id}</span>
-                <span className="text-[14px] font-medium text-white mb-2">{y.label}</span>
-                <span className="bg-white/[0.05] rounded-full px-3 py-1 text-[11px] mb-2 text-[var(--text-secondary)]">{y.sems}</span>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${y.isLive ? 'bg-[#10b981]/10 text-[#10b981]' : 'bg-[#fbbf24]/10 text-[#fbbf24]'}`}>{y.status}</span>
+                <span className="font-['Syne'] text-[28px] md:text-[40px] font-extrabold leading-none mb-1 md:mb-2" style={{ color: y.color }}>0{y.id}</span>
+                <span className="text-[12px] md:text-[14px] font-bold text-white mb-1.5 md:mb-3">{y.label}</span>
+                <span className="bg-white/[0.05] rounded-full px-2 md:px-3 py-0.5 md:py-1 text-[9px] md:text-[11px] mb-1.5 md:mb-3 text-[var(--text-secondary)]">{y.sems}</span>
+                <span className={`text-[8px] md:text-[10px] font-bold px-1.5 md:px-2 py-0.5 rounded-full ${y.isLive ? 'bg-[#10b981]/10 text-[#10b981]' : 'bg-[#fbbf24]/10 text-[#fbbf24]'}`}>{y.status}</span>
               </motion.div>
             ))}
           </div>

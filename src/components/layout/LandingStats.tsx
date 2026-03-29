@@ -60,33 +60,33 @@ export default function LandingStats() {
             boxShadow: `0 15px 30px ${stat.shadow}`,
             borderColor: "rgba(255,255,255,0.15)"
           }}
-          className="relative group bg-white/[0.03] backdrop-blur-[12px] border border-white/[0.06] rounded-[20px] p-4 overflow-hidden transition-all flex flex-col items-center md:items-start text-center md:text-left"
+          className="relative group bg-white/[0.03] backdrop-blur-[12px] border border-white/[0.06] rounded-[18px] md:rounded-[20px] p-2.5 md:p-4 overflow-hidden transition-all flex flex-col items-center md:items-start text-center md:text-left"
         >
           {/* Subtle gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent pointer-events-none" />
           
-          <div className="flex flex-row md:flex-col items-center md:items-start gap-3 md:gap-0 w-full">
+          <div className="flex flex-row md:flex-col items-center md:items-start gap-2.5 md:gap-0 w-full">
             {/* Icon with colored glow */}
             <div 
-              className="w-9 h-9 md:w-10 md:h-10 rounded-[14px] flex items-center justify-center md:mb-4 transition-transform group-hover:scale-110 shadow-inner shrink-0"
+              className="w-7 h-7 md:w-10 md:h-10 rounded-[10px] md:rounded-[14px] flex items-center justify-center md:mb-4 transition-transform group-hover:scale-110 shadow-inner shrink-0"
               style={{ 
                 backgroundColor: `${stat.color}12`, 
                 color: stat.color,
                 boxShadow: `inset 0 0 8px ${stat.color}15` 
               }}
             >
-              <stat.icon size={18} strokeWidth={2.5} />
+              <stat.icon className="w-3.5 h-3.5 md:w-[18px] md:h-[18px]" strokeWidth={2.5} />
             </div>
 
             <div className="relative z-10 flex-1 text-left md:text-left">
               <div className="flex items-end gap-1 mb-0.5 justify-start">
-                <span className="font-['Syne'] font-extrabold text-[20px] md:text-[24px] text-white leading-none tracking-tight">
+                <span className="font-['Syne'] font-extrabold text-[18px] md:text-[24px] text-white leading-none tracking-tight">
                   {stat.value}
                 </span>
-                <Sparkles className="w-2.5 h-2.5 text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity mb-1" />
+                <Sparkles className="w-2 md:w-2.5 h-2 md:h-2.5 text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity mb-0.5 md:mb-1" />
               </div>
               
-              <div className="text-[9px] md:text-[10px] font-bold text-white mb-1 uppercase tracking-[0.1em] opacity-80 line-clamp-1 whitespace-nowrap">
+              <div className="text-[8px] md:text-[10px] font-bold text-white mb-0 uppercase tracking-[0.05em] md:tracking-[0.1em] opacity-80 line-clamp-1 whitespace-nowrap">
                 {stat.label}
               </div>
             </div>

@@ -122,47 +122,47 @@ export default function DashboardPage() {
               )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-10">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 mb-10">
               {semesterSubjects.map(sub => {
                 const firstTopicLink = `/study/${sub.id}/${sub.units.find(u => u.topics.length > 0)?.topics[0]?.id || 'topic-1'}`;
                 return (
                   <Link 
                     key={sub.id} 
                     href={firstTopicLink}
-                    className="group relative bg-[var(--bg-overlay)] border border-[var(--border)] rounded-[var(--r-xl)] p-6 cursor-pointer overflow-hidden transition-all duration-350 hover:-translate-y-1.5 hover:shadow-[0_20px_60px_rgba(0,0,0,0.5)] block" 
+                    className="group relative bg-[var(--bg-overlay)] border border-[var(--border)] rounded-[16px] md:rounded-[var(--r-xl)] p-3 md:p-6 cursor-pointer overflow-hidden transition-all duration-350 hover:-translate-y-1.5 hover:shadow-[0_20px_60px_rgba(0,0,0,0.5)] block" 
                     style={{ borderColor: 'transparent', '--hover-border': sub.color } as any}
                   >
-                    <div className="absolute inset-0 border border-[var(--border)] rounded-[var(--r-xl)] transition-colors duration-350 z-0 group-hover:border-[var(--hover-border)] [box-shadow:inset_0_0_0_1px_transparent] group-hover:[box-shadow:0_0_0_1px_var(--hover-border)] pointer-events-none"></div>
+                    <div className="absolute inset-0 border border-[var(--border)] rounded-[16px] md:rounded-[var(--r-xl)] transition-colors duration-350 z-0 group-hover:border-[var(--hover-border)] [box-shadow:inset_0_0_0_1px_transparent] group-hover:[box-shadow:0_0_0_1px_var(--hover-border)] pointer-events-none"></div>
                     
-                    <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full transition-transform duration-400 group-hover:scale-150 z-0 pointer-events-none" style={{ background: `radial-gradient(circle, ${sub.colorBg}, transparent 70%)` }}></div>
+                    <div className="absolute -top-8 -right-8 w-24 md:w-40 h-24 md:h-40 rounded-full transition-transform duration-400 group-hover:scale-150 z-0 pointer-events-none" style={{ background: `radial-gradient(circle, ${sub.colorBg}, transparent 70%)` }}></div>
   
-                    <div className="relative z-10 flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3.5">
-                        <div className="w-12 h-12 rounded-[14px] flex items-center justify-center text-[24px]" style={{ backgroundColor: sub.colorBg, color: sub.color }}>{sub.icon}</div>
-                        <div>
-                          <h3 className="font-['Syne'] font-bold text-[16px] tracking-tight leading-tight w-[140px] truncate text-[var(--text-primary)]">{sub.name}</h3>
-                          <div className="font-mono text-[11px] text-[var(--text-muted)] mt-1">{sub.code}</div>
+                    <div className="relative z-10 flex flex-col md:flex-row items-start md:items-start justify-between mb-3 md:mb-4">
+                      <div className="flex md:flex-row items-center gap-2 md:gap-3.5 w-full md:w-auto">
+                        <div className="w-8 h-8 md:w-12 md:h-12 rounded-[10px] md:rounded-[14px] flex items-center justify-center text-[18px] md:text-[24px]" style={{ backgroundColor: sub.colorBg, color: sub.color }}>{sub.icon}</div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-['Syne'] font-bold text-[13px] md:text-[16px] tracking-tight leading-tight w-full truncate text-[var(--text-primary)]">{sub.name}</h3>
+                          <div className="font-mono text-[9px] md:text-[11px] text-[var(--text-muted)] mt-0.5 md:mt-1">{sub.code}</div>
                         </div>
                       </div>
-                      <button className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors" onClick={(e) => { e.preventDefault(); /* Bookmark logic here */ }}>
+                      <button className="hidden md:block text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors" onClick={(e) => { e.preventDefault(); }}>
                         <Bookmark className="w-4 h-4" />
                       </button>
                     </div>
   
-                    <div className="relative z-10 mb-5">
-                      <div className="flex justify-between text-[12px] mb-2">
+                    <div className="relative z-10 mb-3 md:mb-5">
+                      <div className="flex justify-between text-[10px] md:text-[12px] mb-1.5 md:mb-2">
                         <span className="text-[var(--text-muted)]">Progress</span>
-                        <span className="font-bold" style={{ color: sub.color }}>0%</span>
+                        <span className="font-bold shrink-0" style={{ color: sub.color }}>0%</span>
                       </div>
                       <div className="h-1 bg-[rgba(255,255,255,0.06)] rounded-full overflow-hidden">
                         <div className="h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `0%`, backgroundColor: sub.color, boxShadow: `0 0 8px ${sub.color}` }}></div>
                       </div>
                     </div>
   
-                    <div className="relative z-10 pt-3.5 border-t border-[var(--border)] flex items-center justify-between">
-                      <span className="text-[12px] text-[var(--text-muted)]">{sub.units.length} units · Progress: 0%</span>
-                      <span className="text-[13px] font-bold flex items-center gap-1 group-hover:underline" style={{ color: sub.color }}>
-                        Study <ChevronRight className="w-3.5 h-3.5" />
+                    <div className="relative z-10 pt-2 md:pt-3.5 border-t border-[var(--border)] flex items-center justify-between">
+                      <span className="text-[9px] md:text-[12px] text-[var(--text-muted)] truncate mr-2">{sub.units.length} units</span>
+                      <span className="text-[11px] md:text-[13px] font-bold flex items-center gap-0.5 md:gap-1 group-hover:underline shrink-0" style={{ color: sub.color }}>
+                        Study <ChevronRight className="w-3 md:w-3.5 h-3 md:h-3.5" />
                       </span>
                     </div>
                   </Link>
