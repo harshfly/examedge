@@ -5,7 +5,15 @@ import { useDataStore } from '@/store/useDataStore';
 import { toast } from 'sonner';
 
 export default function AdminSettings() {
-  const { examDates, setYearExamDate, isSynced, fetchInitialData, bootstrapToSupabase } = useDataStore();
+  const { 
+    examDates, 
+    setYearExamDate, 
+    isSynced, 
+    fetchInitialData, 
+    bootstrapToSupabase,
+    heroAnnouncement,
+    setHeroAnnouncement
+  } = useDataStore();
 
   const handleSave = () => {
     toast.success("Academic configuration synchronized across all nodes.");
@@ -57,6 +65,28 @@ export default function AdminSettings() {
               >
                 <Cloud className="w-4 h-4" /> Bootstrap to Supabase
               </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Global Announcements Card */}
+        <div className="bg-[var(--bg-overlay)] border border-[var(--border)] rounded-[var(--r-xl)] overflow-hidden">
+          <div className="bg-[var(--bg-elevated)] px-6 py-4 border-b border-[var(--border)] flex items-center gap-3">
+             <RefreshCw className="w-5 h-5 text-[var(--accent)]" />
+             <h3 className="font-bold text-[15px]">Global Announcements</h3>
+          </div>
+          <div className="p-6">
+            <p className="text-[12px] text-[var(--text-secondary)] mb-4">Edit the high-impact pill text displayed on the student landing page hero section.</p>
+            <div className="flex flex-col gap-4">
+              <label className="text-[11px] font-bold tracking-wider text-[var(--text-muted)] uppercase">Announcement Text</label>
+              <input 
+                type="text" 
+                className="input-field" 
+                value={heroAnnouncement} 
+                onChange={(e) => setHeroAnnouncement(e.target.value)} 
+                placeholder="e.g. ✦ SVIIT B.Tech — Sem 6 Live"
+              />
+              <p className="text-[10px] text-[var(--text-muted)] italic">Tip: Use the ✦ character for that premium look.</p>
             </div>
           </div>
         </div>

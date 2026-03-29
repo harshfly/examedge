@@ -12,7 +12,7 @@ import LandingStats from '@/components/layout/LandingStats';
 
 export default function LandingPage() {
   const router = useRouter();
-  const { subjects } = useDataStore();
+  const { subjects, heroAnnouncement } = useDataStore();
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedSem, setSelectedSem] = useState<number | null>(null);
 
@@ -51,7 +51,7 @@ export default function LandingPage() {
         <div className="max-w-[960px] mx-auto px-5 py-6 md:py-16 relative z-10 flex flex-col items-center flex-1 w-full pb-32">
         {/* Eyebrow Pill */}
         <div className="mb-4 md:mb-8 px-4 py-1 rounded-full border border-[rgba(108,99,255,0.2)] bg-[rgba(108,99,255,0.1)] animate-pulse-slow">
-          <span className="text-[10px] md:text-[12px] font-bold text-[#a78bfa] tracking-[0.05em] uppercase">✦ SVIIT B.Tech — Sem 6 Live</span>
+          <span className="text-[10px] md:text-[12px] font-bold text-[#a78bfa] tracking-[0.05em] uppercase">{heroAnnouncement}</span>
         </div>
 
         {/* Hero Headlines */}

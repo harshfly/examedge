@@ -171,23 +171,23 @@ export default function DashboardPage() {
             </div>
 
             {/* Quick Actions Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 mb-10">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-10">
               {[
-                { icon: <HelpCircle className="w-6 h-6 text-[var(--accent)]" />, title: 'Take a Quiz', desc: 'Test your knowledge with 200+ questions', color: 'var(--accent)', href: '/quiz' },
-                { icon: <Layers className="w-6 h-6 text-[var(--color-iot)]" />, title: 'Browse Flashcards', desc: 'Active recall spaced repetition', color: 'var(--color-iot)', href: '/flashcards' },
-                { icon: <BookOpen className="w-6 h-6 text-[var(--color-ds)]" />, title: 'View Progress', desc: 'Detailed analytics and weak spotting', color: 'var(--color-ds)', href: '/progress' },
-                { icon: <Calendar className="w-6 h-6 text-[var(--color-cd)]" />, title: 'Revision Planner', desc: 'Smart AI scheduling for exams', color: 'var(--color-cd)', href: '/planner' },
+                { icon: <HelpCircle className="w-4 h-4 md:w-6 md:h-6 text-[var(--accent)]" />, title: 'Take a Quiz', desc: 'Test your knowledge with 200+ questions', color: 'var(--accent)', href: '/quiz' },
+                { icon: <Layers className="w-4 h-4 md:w-6 md:h-6 text-[var(--color-iot)]" />, title: 'Flashcards', desc: 'Active recall spaced repetition', color: 'var(--color-iot)', href: '/flashcards' },
+                { icon: <BookOpen className="w-4 h-4 md:w-6 md:h-6 text-[var(--color-ds)]" />, title: 'View Progress', desc: 'Detailed analytics and weak spotting', color: 'var(--color-ds)', href: '/progress' },
+                { icon: <Calendar className="w-4 h-4 md:w-6 md:h-6 text-[var(--color-cd)]" />, title: 'Revision Plan', desc: 'Smart AI scheduling for exams', color: 'var(--color-cd)', href: '/planner' },
               ].map((action, i) => (
-                <Link key={i} href={action.href} className="group flex flex-col justify-between h-full bg-[var(--bg-overlay)] border border-[var(--border)] rounded-[var(--r-xl)] p-5 cursor-pointer transition-all duration-300 hover:border-[var(--border-hover)] hover:-translate-y-1 block">
+                <Link key={i} href={action.href} className="group flex flex-col justify-between h-full bg-[var(--bg-overlay)] border border-[var(--border)] rounded-[16px] md:rounded-[var(--r-xl)] p-3 md:p-5 cursor-pointer transition-all duration-300 hover:border-[var(--border-hover)] hover:-translate-y-1 block">
                   <div>
-                    <div className="w-12 h-12 rounded-[14px] flex items-center justify-center mb-4" style={{ backgroundColor: `var(--bg-${action.color.split('-')[2]?.replace(')','')})` }}>
+                    <div className="w-8 h-8 md:w-12 md:h-12 rounded-[10px] md:rounded-[14px] flex items-center justify-center mb-3 md:mb-4" style={{ backgroundColor: `var(--bg-${action.color.split('-')[2]?.replace(')','')})` }}>
                       {action.icon}
                     </div>
-                    <h3 className="font-['Syne'] font-bold text-[16px] text-[var(--text-primary)] mb-1.5">{action.title}</h3>
-                    <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">{action.desc}</p>
+                    <h3 className="font-['Syne'] font-bold text-[13px] md:text-[16px] text-[var(--text-primary)] mb-0.5 md:mb-1.5 leading-tight">{action.title}</h3>
+                    <p className="text-[10px] md:text-[13px] text-[var(--text-secondary)] leading-tight line-clamp-2 md:line-clamp-none">{action.desc}</p>
                   </div>
-                  <div className="mt-4 flex justify-end opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                    <span className="font-bold flex items-center gap-1" style={{ color: action.color }}><ChevronRight className="w-4 h-4" /></span>
+                  <div className="mt-3 md:mt-4 flex justify-end md:opacity-0 md:-translate-x-2 md:group-hover:opacity-100 md:group-hover:translate-x-0 transition-all duration-300">
+                    <span className="font-bold flex items-center gap-1" style={{ color: action.color }}><ChevronRight className="w-3 md:w-4 h-3 md:h-4" /></span>
                   </div>
                 </Link>
               ))}

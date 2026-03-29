@@ -24,6 +24,10 @@ interface DataState {
   curriculum: CurriculumYear[];
   updateSemesterStatus: (sem: number, status: 'live' | 'coming-soon' | 'locked') => void;
 
+  // Hero Announcement
+  heroAnnouncement: string;
+  setHeroAnnouncement: (text: string) => void;
+
   // Semester selection
   selectedYear: number;
   selectedSem: number;
@@ -74,6 +78,7 @@ export const useDataStore = create<DataState>()(
       quotes: [],
       syllabi: [],
       curriculum: defaultCurriculum,
+      heroAnnouncement: '✦ SVIIT B.Tech — Sem 6 Live',
 
       // Default to Year 3, Semester 6
       selectedYear: 3,
@@ -126,8 +131,10 @@ export const useDataStore = create<DataState>()(
           if (settings) {
             const curriculum = settings.find(s => s.key === 'curriculum');
             const examDates = settings.find(s => s.key === 'exam_dates');
+            const announcement = settings.find(s => s.key === 'hero_announcement');
             if (curriculum) updates.curriculum = curriculum.value;
             if (examDates) updates.examDates = examDates.value;
+            if (announcement) updates.heroAnnouncement = announcement.value.text;
           }
 
           set(updates);
@@ -149,7 +156,8 @@ export const useDataStore = create<DataState>()(
             ...state.syllabi.map((s: any) => supabase.from('examedge_syllabi').upsert({ id: s.id, data: s })),
             ...state.images.map((i: any) => supabase.from('examedge_images').upsert({ id: i.id, data: i })),
             supabase.from('examedge_settings').upsert({ key: 'curriculum', value: state.curriculum }),
-            supabase.from('examedge_settings').upsert({ key: 'exam_dates', value: state.examDates })
+            supabase.from('examedge_settings').upsert({ key: 'exam_dates', value: state.examDates }),
+            supabase.from('examedge_settings').upsert({ key: 'hero_announcement', value: { text: state.heroAnnouncement } })
           ]);
           toast.success("Bootstrap complete. All data is now in Supabase.");
         } catch (error) {
@@ -307,6 +315,10 @@ export const useDataStore = create<DataState>()(
         const newDates = { ...state.examDates, [year]: date };
         supabase.from('examedge_settings').upsert({ key: 'exam_dates', value: newDates }).then();
         return { examDates: newDates };
+      }),
+      setHeroAnnouncement: (text) => set((state) => {
+        supabase.from('examedge_settings').upsert({ key: 'hero_announcement', value: { text } }).then();
+        return { heroAnnouncement: text };
       }),
     }),
     {
