@@ -106,8 +106,12 @@ export default function LandingPage() {
           <div className="label text-[var(--text-muted)] mb-8 flex justify-center items-center text-center w-full px-[5%] before:content-[''] before:flex-1 before:h-[1px] before:bg-white/[0.08] before:mr-6 after:content-[''] after:flex-1 after:h-[1px] after:bg-white/[0.08] after:ml-6">
             02 — SELECT YOUR SEMESTER
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-4 max-w-[600px] mx-auto">
-            {!selectedYear && <div className="col-span-4 text-center text-[13px] text-[var(--text-muted)] py-4 backdrop-blur-sm bg-white/[0.02] rounded-xl border border-white/[0.05]">Please select a year first.</div>}
+          <div className="flex flex-wrap justify-center gap-4 max-w-[640px] mx-auto">
+            {!selectedYear && (
+              <div className="w-full text-center text-[13px] text-[var(--text-muted)] py-4 backdrop-blur-sm bg-white/[0.02] rounded-xl border border-white/[0.05]">
+                Please select a year first.
+              </div>
+            )}
             
             {currentSems.map((s, i) => {
               const isSelected = selectedSem === s.id;
@@ -123,7 +127,7 @@ export default function LandingPage() {
                     if (s.isLive) setSelectedSem(s.id);
                     else alert('Content for ' + s.label + ' is coming soon!');
                   }}
-                  className={`flex flex-col items-center justify-center py-6 px-4 rounded-[20px] text-center transition-all duration-250 relative overflow-hidden
+                  className={`flex flex-col items-center justify-center py-6 px-4 rounded-[20px] text-center transition-all duration-250 relative overflow-hidden w-[140px] sm:w-[150px]
                     ${s.isLive ? 'cursor-pointer' : 'opacity-40 cursor-not-allowed'}
                     ${isSelected ? 'bg-[rgba(108,99,255,0.12)] border-2 border-[#6c63ff] shadow-[0_8px_32px_rgba(108,99,255,0.25)]' : 'bg-white/[0.03] backdrop-blur-md border border-white/[0.08] hover:border-white/[0.2]'}
                   `}
