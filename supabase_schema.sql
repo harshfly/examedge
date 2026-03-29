@@ -230,3 +230,16 @@ SELECT
   1
 FROM auth.users
 ON CONFLICT (id) DO NOTHING;
+
+-- 12. Seed Initial Settings (IMPORTANT FOR DYNAMIC UI)
+INSERT INTO public.examedge_settings (key, value)
+VALUES 
+  ('hero_announcement', '{"text": "✦ SVIIT B.Tech — Sem 6 Live"}'),
+  ('curriculum', '[
+    {"id":1,"label":"First Year","sems":"Sem I & II","status":"locked","semesters":[{"sem":1,"label":"Semester 1","status":"locked"},{"sem":2,"label":"Semester 2","status":"locked"}]},
+    {"id":2,"label":"Second Year","sems":"Sem III & IV","status":"locked","semesters":[{"sem":3,"label":"Semester 3","status":"locked"},{"sem":4,"label":"Semester 4","status":"locked"}]},
+    {"id":3,"label":"Third Year","sems":"Sem V & VI","status":"Available","isLive":true,"semesters":[{"sem":5,"label":"Semester 5","status":"coming-soon"},{"sem":6,"label":"Semester 6","status":"live","isLive":true}]},
+    {"id":4,"label":"Fourth Year","sems":"Sem VII & VIII","status":"locked","semesters":[{"sem":7,"label":"Semester 1","status":"locked"},{"sem":8,"label":"Semester 2","status":"locked"}]}
+  ]'),
+  ('exam_dates', '{"1":"","2":"","3":"","4":""}')
+ON CONFLICT (key) DO NOTHING;
