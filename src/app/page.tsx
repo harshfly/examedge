@@ -52,8 +52,8 @@ export default function LandingPage() {
         </div>
 
         {/* Hero Headlines */}
-        <h1 className="font-['Syne'] font-extrabold text-[32px] md:text-[64px] leading-tight text-center mb-0">Your Smart Exam</h1>
-        <h1 className="font-['Syne'] font-extrabold text-[44px] md:text-[84px] text-gradient text-center mb-3 md:mb-6 leading-[0.9] pb-1">Companion</h1>
+        <h1 className="font-['Syne'] font-extrabold text-[24px] sm:text-[32px] md:text-[64px] leading-tight text-center mb-0 tracking-tight text-balance">Your Smart Exam</h1>
+        <h1 className="font-['Syne'] font-extrabold text-[34px] sm:text-[44px] md:text-[84px] text-gradient text-center mb-3 md:mb-6 leading-[0.9] pb-1 tracking-tighter text-balance">Companion</h1>
         <p className="text-[13px] md:text-[18px] text-center text-[var(--text-secondary)] max-w-[480px] mb-5 md:mb-12 px-2">
           Select your year and semester to access personalized study materials, quizzes, flashcards, and progress tracking.
         </p>
