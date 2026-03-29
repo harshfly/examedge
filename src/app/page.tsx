@@ -7,6 +7,7 @@ import AnimatedBackground from '@/components/layout/AnimatedBackground';
 import LandingNavbar from '@/components/layout/LandingNavbar';
 import CreatorFooter from '@/components/layout/CreatorFooter';
 import { useDataStore } from '@/store/useDataStore';
+import LandingStats from '@/components/layout/LandingStats';
 
 export default function LandingPage() {
   const router = useRouter();
@@ -48,8 +49,8 @@ export default function LandingPage() {
       <div className="w-full min-h-screen flex flex-col relative overflow-x-hidden">
         <div className="max-w-[960px] mx-auto px-6 py-12 relative z-10 flex flex-col items-center flex-1 w-full pb-32">
         {/* Eyebrow Pill */}
-        <div className="mb-6 px-4 py-1.5 rounded-full border border-[rgba(108,99,255,0.25)] bg-[rgba(108,99,255,0.12)]">
-          <span className="text-[12px] font-semibold text-[#a78bfa] tracking-[0.06em] uppercase">✦ Your SVIIT B.Tech Learn Buddy</span>
+        <div className="mb-6 px-4 py-1.5 rounded-full border border-[rgba(108,99,255,0.25)] bg-[rgba(108,99,255,0.12)] animate-pulse-slow">
+          <span className="text-[12px] font-semibold text-[#a78bfa] tracking-[0.06em] uppercase">✦ SVIIT B.Tech — Sem 6 Curriculum Live</span>
         </div>
 
         {/* Hero Headlines */}
@@ -59,13 +60,8 @@ export default function LandingPage() {
           Select your year and semester to access personalized study materials, quizzes, flashcards, and progress tracking.
         </p>
 
-        {/* Stats Chips */}
-        <div className="flex flex-wrap justify-center gap-2.5 mb-14">
-          <span className="bg-[var(--glass)] border border-[var(--border)] rounded-full px-4 py-1.5 text-[12px] text-[var(--text-secondary)]">📚 7 Subjects</span>
-          <span className="bg-[var(--glass)] border border-[var(--border)] rounded-full px-4 py-1.5 text-[12px] text-[var(--text-secondary)]">📖 35 Units</span>
-          <span className="bg-[var(--glass)] border border-[var(--border)] rounded-full px-4 py-1.5 text-[12px] text-[var(--text-secondary)]">❓ 200+ Questions</span>
-          <span className="bg-[var(--glass)] border border-[var(--border)] rounded-full px-4 py-1.5 text-[12px] text-[var(--text-secondary)]">🃏 150+ Cards</span>
-        </div>
+        {/* Premium Stats Ecosystem */}
+        <LandingStats />
 
         {/* SECTION 01: YEAR */}
         <div className="w-full mb-10">
